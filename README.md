@@ -1,4 +1,4 @@
-# PRM
+# Probabilistic RoadMap
 
 This is a project of Advanced Computer Architecture, a course of master degree in Computer Engineering of University of Pavia.
 
