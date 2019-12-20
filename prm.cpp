@@ -51,7 +51,6 @@ int main(int argc, char** argv)
 	Rotoidal j2_r(l2, 0, 0, angle_2);
 	Rotoidal j3_r(l3, 0, 0, angle_3);
 	
-	
 	/*----------------------------------------------
 		Display the environment: Robot, obstacles, 
 			free robot configurations, optimal path
@@ -63,6 +62,9 @@ int main(int argc, char** argv)
   	Mat flip_env_image( WINDOW, WINDOW, CV_8UC3, Scalar(255,255,255));
   	Mat map_x(env_image.size(), CV_32FC1);
   	Mat map_y(env_image.size(), CV_32FC1);
+  	
+  	// Display Robot
+  	j1_r.draw(env_image);
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);

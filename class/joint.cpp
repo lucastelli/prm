@@ -22,8 +22,3 @@ float Joint::getTeta()
 {
 	return teta;
 }
-
-/*virtual void Joint::draw()
-{
-
-}*/

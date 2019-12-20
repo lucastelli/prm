@@ -1,8 +1,9 @@
 #ifndef LINEAR_H_
 #define LINEAR_H_
 
-#include "joint.h"
 #include <iostream>
+
+#include "joint.h"
 
 class Linear: public Joint
 {
@@ -10,7 +11,7 @@ class Linear: public Joint
 		Linear();
 		Linear(float a, float alpha, float d, float teta);
 	
-		void draw();
+		void draw(cv::Mat image);
 };
 
 #endif

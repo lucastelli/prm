@@ -1,6 +1,10 @@
 #ifndef JOINT_H_
 #define JOINT_H_
 
+#include <opencv2/core.hpp>
+#include <opencv2/imgproc.hpp>
+#include <opencv2/highgui.hpp>
+
 class Rotoidal;
 class Linear;
 
@@ -15,7 +19,7 @@ class Joint
 		float getAlpha();
 		float getDistance();	
 		float getTeta();
-		virtual void draw() = 0;
+		virtual void draw(cv::Mat image) = 0;
 };
 
 #endif

@@ -8,6 +8,10 @@ configure_file(prmConfig.h.in prmConfig.h)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# find and include OpenCV library
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+
 # bring the headers into the project
 include_directories(include)
 
@@ -15,10 +19,6 @@ include_directories(include)
 include_directories(class)
 link_directories(class)
 add_subdirectory(class)
-
-# find and include OpenCV library
-find_package( OpenCV REQUIRED )
-include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 # add the executable
 set(SOURCE_FILES prm.cpp)
