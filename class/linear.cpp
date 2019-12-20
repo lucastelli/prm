@@ -4,5 +4,5 @@ Linear::Linear(float a, float alpha, float d, float teta) : Joint(a, alpha, d, t
 
 void Linear::draw()
 {
-
+	std::cout << "drawing linear joint \n";
 }

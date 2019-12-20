@@ -11,14 +11,14 @@
 ../include/linear.h
 joint.h
 ../include/joint.h
+iostream
+-
 
 ../include/rotoidal.h
 joint.h
 ../include/joint.h
-
-/home/luca/software/projectACA/project/class/joint.cpp
-joint.h
-/home/luca/software/projectACA/project/class/joint.h
+iostream
+-
 
 /home/luca/software/projectACA/project/class/linear.cpp
 linear.h

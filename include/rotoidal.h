@@ -2,6 +2,7 @@
 #define ROTOIDAL_H_
 
 #include "joint.h"
+#include <iostream>
 
 class Rotoidal : public Joint 
 {

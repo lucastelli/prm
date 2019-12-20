@@ -15,7 +15,7 @@ class Joint
 		float getAlpha();
 		float getDistance();	
 		float getTeta();
-		void draw();
+		virtual void draw() = 0;
 };
 
 #endif

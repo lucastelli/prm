@@ -16,6 +16,10 @@ include_directories(class)
 link_directories(class)
 add_subdirectory(class)
 
+# find and include OpenCV library
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+
 # add the executable
 set(SOURCE_FILES prm.cpp)
 add_executable( ${PROJECT_NAME} ${SOURCE_FILES} )
@@ -25,4 +29,5 @@ target_include_directories(prm PUBLIC
                            )
                            
 target_link_libraries( ${PROJECT_NAME} class)
+target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 

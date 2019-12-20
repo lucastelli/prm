@@ -2,6 +2,7 @@
 #define LINEAR_H_
 
 #include "joint.h"
+#include <iostream>
 
 class Linear: public Joint
 {

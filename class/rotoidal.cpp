@@ -4,5 +4,5 @@ Rotoidal::Rotoidal(float a, float alpha, float d, float teta) : Joint(a, alpha, 
 
 void Rotoidal::draw()
 {
-
+	std::cout << "drawing rotoidal joint \n";
 }

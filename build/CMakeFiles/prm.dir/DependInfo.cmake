@@ -13,6 +13,7 @@ set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "../include"
   "../class"
   "."
+  "/usr/local/include/opencv4"
   )
 
 # Targets to which this target links.
