@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/prm.dir/prm.cpp.o  -o prm  -L/home/luca/software/projectACA/project/class -Wl,-rpath,/home/luca/software/projectACA/project/class class/libclass.a 

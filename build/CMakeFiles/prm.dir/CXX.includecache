@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/joint.h
+
+../include/linear.h
+joint.h
+../include/joint.h
+
+../include/rotoidal.h
+joint.h
+../include/joint.h
+
+/home/luca/software/projectACA/project/prm.cpp
+cmath
+-
+iostream
+-
+joint.h
+/home/luca/software/projectACA/project/joint.h
+rotoidal.h
+/home/luca/software/projectACA/project/rotoidal.h
+linear.h
+/home/luca/software/projectACA/project/linear.h
+prmConfig.h
+/home/luca/software/projectACA/project/prmConfig.h
+
+prmConfig.h
+

@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/joint.h
+
+../include/linear.h
+joint.h
+../include/joint.h
+
+../include/rotoidal.h
+joint.h
+../include/joint.h
+
+/home/luca/software/projectACA/project/class/joint.cpp
+joint.h
+/home/luca/software/projectACA/project/class/joint.h
+
+/home/luca/software/projectACA/project/class/linear.cpp
+linear.h
+/home/luca/software/projectACA/project/class/linear.h
+
+/home/luca/software/projectACA/project/class/rotoidal.cpp
+rotoidal.h
+/home/luca/software/projectACA/project/class/rotoidal.h
+
