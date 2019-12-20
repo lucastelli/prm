@@ -2,7 +2,9 @@
 
 This is a project of Advanced Computer Architecture, a course of master degree in Computer Engineering of University of Pavia.
 
-Goals
+## Getting Started
+
+### Goals
 
 The goals of this project are:
 1) develop a program that simulate a Probabilistic RoadMap robot planner both for robot manipulator and mobile robot.
