@@ -9,4 +9,6 @@ The goals of this project are:
 2) develop GJK distance algorithm for collision detection.
 3) develop A* algorithm to find the optimal path.
 4) use OpenCV library to display the results.
-5) parallelized those programs using OpenMP library to speed-up their execution.
+5) parallelized these programs using OpenMP library to speed-up their execution.
+
+These programs are written in C/C++.
