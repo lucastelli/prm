@@ -31,6 +31,10 @@ cmath
 -
 iostream
 -
+string
+-
+regex
+-
 opencv2/core.hpp
 -
 opencv2/imgproc.hpp
