@@ -82,6 +82,8 @@ int main(int argc, char** argv)
   	manipulator.addJoint(&j2_r);
   	manipulator.addJoint(&j3_r);
   	
+  	
+  	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
 	remap( env_image, flip_env_image, map_x, map_y, INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0) );

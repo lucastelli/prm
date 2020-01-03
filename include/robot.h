@@ -10,8 +10,9 @@ class Robot
 		
 	public:
 		void addJoint(Joint* j);
-		/*void computePose();
-		void draw();*/
+		Joint * getJoint(int index);
+		void computePose();
+		/*void draw();*/
 };
 
 #endif
