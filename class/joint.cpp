@@ -23,14 +23,14 @@ float Joint::getTeta()
 	return teta;
 }
 
-float * Joint::getTrMatrix()
+/*float * Joint::getTrMatrix()
 {
 	/*trMatrix = {cos(teta), -sin(teta)*cos(alpha), sin(teta)*sin(alpha), arm*cos(teta), 
 						sin(teta), cos(teta)*cos(alpha), -cos(teta)*sin(alpha), arm*sin(teta),
 						0, sin(alpha), cos(alpha), distance,
 						0, 0, 0, 1};*/
 						
-	trMatrix[0][0] = cos(teta);
+	/*trMatrix[0][0] = cos(teta);
 	trMatrix[0][1] = -sin(teta)*cos(alpha);
 	trMatrix[0][2] = sin(teta)*sin(alpha);
 	trMatrix[0][3] = arm*cos(teta);
@@ -51,7 +51,7 @@ float * Joint::getTrMatrix()
 	trMatrix[3][3] = 1;
 	
 	return &trMatrix[0][0];
-}
+}*/
 
 void Joint::setPosition(cv::Point p)
 {

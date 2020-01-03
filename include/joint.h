@@ -18,7 +18,7 @@ class Joint
 	float alpha;					// angle around x(i) between z(i-1) and z(i) axes (positive counter-clockwise)
 	float distance;				// distance from x(i-1) to x(i) axes on z(i-1) axis
 	float teta;						// angle around z(i-1) between x(i-1) and x(i) axes (positive counter-clockwise)
-	float trMatrix[4][4];		//	omogeneous transformation matrix of joint i
+	
 	cv::Point position;			// position of the joint in the workspace
 	
 	public:
@@ -27,8 +27,7 @@ class Joint
 		float getAlpha();
 		float getDistance();	
 		float getTeta();
-		float * getTrMatrix();
-		float * getPosition();
+		
 		void setPosition(cv::Point p);
 		virtual void draw(cv::Mat image) = 0;
 };
