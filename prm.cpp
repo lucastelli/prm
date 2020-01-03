@@ -10,6 +10,7 @@
 #include "joint.h"
 #include "rotoidal.h"
 #include "linear.h"
+#include "robot.h"
 #include "prmConfig.h"
 
 // Window Parameters //
@@ -74,18 +75,12 @@ int main(int argc, char** argv)
   	
   	// Display Robot
   	j1_r.setPosition(cv::Point(50,50));
-  	float *vet = j1_r.getTrMatrix();
-  	
-  	for(int j=0; j<4; j++)
-  	{
-  		for(int i=j*4; i<j*4+4; i++)
-  		{
-  			std::cout << vet[i] << " ";
-  		}
-  		std::cout << std::endl;
-  	}
-  	
   	j1_r.draw(env_image);
+  	
+  	Robot manipulator;
+  	manipulator.addJoint(&j1_r);
+  	manipulator.addJoint(&j2_r);
+  	manipulator.addJoint(&j3_r);
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);

@@ -179,6 +179,33 @@ linear.cpp.s:
 	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/linear.cpp.s
 .PHONY : linear.cpp.s
 
+robot.o: robot.cpp.o
+
+.PHONY : robot.o
+
+# target to build an object file
+robot.cpp.o:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/robot.cpp.o
+.PHONY : robot.cpp.o
+
+robot.i: robot.cpp.i
+
+.PHONY : robot.i
+
+# target to preprocess a source file
+robot.cpp.i:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/robot.cpp.i
+.PHONY : robot.cpp.i
+
+robot.s: robot.cpp.s
+
+.PHONY : robot.s
+
+# target to generate assembly for a file
+robot.cpp.s:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/robot.cpp.s
+.PHONY : robot.cpp.s
+
 rotoidal.o: rotoidal.cpp.o
 
 .PHONY : rotoidal.o
@@ -221,6 +248,9 @@ help:
 	@echo "... linear.o"
 	@echo "... linear.i"
 	@echo "... linear.s"
+	@echo "... robot.o"
+	@echo "... robot.i"
+	@echo "... robot.s"
 	@echo "... rotoidal.o"
 	@echo "... rotoidal.i"
 	@echo "... rotoidal.s"

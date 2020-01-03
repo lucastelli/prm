@@ -4,6 +4,7 @@
 CMakeFiles/prm.dir/prm.cpp.o
  ../include/joint.h
  ../include/linear.h
+ ../include/robot.h
  ../include/rotoidal.h
  /home/luca/software/projectACA/project/prm.cpp
  /usr/local/include/opencv4/opencv2/calib3d.hpp

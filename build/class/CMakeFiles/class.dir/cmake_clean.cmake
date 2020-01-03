@@ -1,6 +1,7 @@
 file(REMOVE_RECURSE
   "CMakeFiles/class.dir/joint.cpp.o"
   "CMakeFiles/class.dir/linear.cpp.o"
+  "CMakeFiles/class.dir/robot.cpp.o"
   "CMakeFiles/class.dir/rotoidal.cpp.o"
   "libclass.pdb"
   "libclass.a"

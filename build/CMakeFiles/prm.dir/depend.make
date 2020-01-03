@@ -3,6 +3,7 @@
 
 CMakeFiles/prm.dir/prm.cpp.o: ../include/joint.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/linear.h
+CMakeFiles/prm.dir/prm.cpp.o: ../include/robot.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/rotoidal.h
 CMakeFiles/prm.dir/prm.cpp.o: ../prm.cpp
 CMakeFiles/prm.dir/prm.cpp.o: /usr/local/include/opencv4/opencv2/calib3d.hpp

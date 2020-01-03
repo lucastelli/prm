@@ -71,7 +71,7 @@ CMAKE_BINARY_DIR = /home/luca/software/projectACA/project/build
 CMakeFiles/prm.dir/all: class/CMakeFiles/class.dir/all
 	$(MAKE) -f CMakeFiles/prm.dir/build.make CMakeFiles/prm.dir/depend
 	$(MAKE) -f CMakeFiles/prm.dir/build.make CMakeFiles/prm.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=5,6 "Built target prm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=6,7 "Built target prm"
 .PHONY : CMakeFiles/prm.dir/all
 
 # Include target in all.
@@ -81,7 +81,7 @@ all: CMakeFiles/prm.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/prm.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 7
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/prm.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 0
 .PHONY : CMakeFiles/prm.dir/rule
@@ -126,7 +126,7 @@ class/preinstall:
 class/CMakeFiles/class.dir/all:
 	$(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/depend
 	$(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=1,2,3,4 "Built target class"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target class"
 .PHONY : class/CMakeFiles/class.dir/all
 
 # Include target in all.
@@ -136,7 +136,7 @@ all: class/CMakeFiles/class.dir/all
 
 # Build rule for subdir invocation for target.
 class/CMakeFiles/class.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 5
 	$(MAKE) -f CMakeFiles/Makefile2 class/CMakeFiles/class.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 0
 .PHONY : class/CMakeFiles/class.dir/rule

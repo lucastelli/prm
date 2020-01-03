@@ -83,9 +83,22 @@ class/CMakeFiles/class.dir/linear.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/class.dir/linear.cpp.s"
 	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/luca/software/projectACA/project/class/linear.cpp -o CMakeFiles/class.dir/linear.cpp.s
 
+class/CMakeFiles/class.dir/robot.cpp.o: class/CMakeFiles/class.dir/flags.make
+class/CMakeFiles/class.dir/robot.cpp.o: ../class/robot.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object class/CMakeFiles/class.dir/robot.cpp.o"
+	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/class.dir/robot.cpp.o -c /home/luca/software/projectACA/project/class/robot.cpp
+
+class/CMakeFiles/class.dir/robot.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/class.dir/robot.cpp.i"
+	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/luca/software/projectACA/project/class/robot.cpp > CMakeFiles/class.dir/robot.cpp.i
+
+class/CMakeFiles/class.dir/robot.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/class.dir/robot.cpp.s"
+	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/luca/software/projectACA/project/class/robot.cpp -o CMakeFiles/class.dir/robot.cpp.s
+
 class/CMakeFiles/class.dir/rotoidal.cpp.o: class/CMakeFiles/class.dir/flags.make
 class/CMakeFiles/class.dir/rotoidal.cpp.o: ../class/rotoidal.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object class/CMakeFiles/class.dir/rotoidal.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object class/CMakeFiles/class.dir/rotoidal.cpp.o"
 	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/class.dir/rotoidal.cpp.o -c /home/luca/software/projectACA/project/class/rotoidal.cpp
 
 class/CMakeFiles/class.dir/rotoidal.cpp.i: cmake_force
@@ -100,6 +113,7 @@ class/CMakeFiles/class.dir/rotoidal.cpp.s: cmake_force
 class_OBJECTS = \
 "CMakeFiles/class.dir/joint.cpp.o" \
 "CMakeFiles/class.dir/linear.cpp.o" \
+"CMakeFiles/class.dir/robot.cpp.o" \
 "CMakeFiles/class.dir/rotoidal.cpp.o"
 
 # External object files for target class
@@ -107,10 +121,11 @@ class_EXTERNAL_OBJECTS =
 
 class/libclass.a: class/CMakeFiles/class.dir/joint.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/linear.cpp.o
+class/libclass.a: class/CMakeFiles/class.dir/robot.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/rotoidal.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/build.make
 class/libclass.a: class/CMakeFiles/class.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Linking CXX static library libclass.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Linking CXX static library libclass.a"
 	cd /home/luca/software/projectACA/project/build/class && $(CMAKE_COMMAND) -P CMakeFiles/class.dir/cmake_clean_target.cmake
 	cd /home/luca/software/projectACA/project/build/class && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/class.dir/link.txt --verbose=$(VERBOSE)
 

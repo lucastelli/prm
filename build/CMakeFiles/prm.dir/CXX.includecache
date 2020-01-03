@@ -24,6 +24,10 @@ iostream
 joint.h
 ../include/joint.h
 
+../include/robot.h
+joint.h
+../include/joint.h
+
 ../include/rotoidal.h
 iostream
 -
@@ -57,6 +61,8 @@ rotoidal.h
 /home/luca/software/projectACA/project/rotoidal.h
 linear.h
 /home/luca/software/projectACA/project/linear.h
+robot.h
+/home/luca/software/projectACA/project/robot.h
 prmConfig.h
 /home/luca/software/projectACA/project/prmConfig.h
 
