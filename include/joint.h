@@ -27,7 +27,7 @@ class Joint
 		float getAlpha();
 		float getDistance();	
 		float getTeta();
-		
+		cv::Point getPosition();
 		void setPosition(cv::Point p);
 		virtual void draw(cv::Mat image) = 0;
 };

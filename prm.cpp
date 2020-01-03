@@ -82,7 +82,16 @@ int main(int argc, char** argv)
   	manipulator.addJoint(&j2_r);
   	manipulator.addJoint(&j3_r);
   	
+  	std::cout << manipulator.getJoint(0)->getArm() << std::endl;
   	
+  	manipulator.computePose();
+  	
+  	manipulator.computeDHMatrix();
+  	
+  	//std::cout << manipulator.getJoint(0)->getArm() << std::endl;
+  	
+  	/*manipulator.computePose();
+  	std::cout << manipulator.getJoint(0)->getArm();*/
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
