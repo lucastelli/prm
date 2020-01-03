@@ -7,6 +7,10 @@
 #IncludeRegexTransform: 
 
 ../include/joint.h
+cmath
+-
+iostream
+-
 opencv2/core.hpp
 -
 opencv2/imgproc.hpp
