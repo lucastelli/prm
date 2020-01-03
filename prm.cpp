@@ -73,6 +73,18 @@ int main(int argc, char** argv)
   	cv::Point yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
   	// Display Robot
+  	j1_r.setPosition(cv::Point(50,50));
+  	float *vet = j1_r.getTrMatrix();
+  	
+  	for(int j=0; j<4; j++)
+  	{
+  		for(int i=j*4; i<j*4+4; i++)
+  		{
+  			std::cout << vet[i] << " ";
+  		}
+  		std::cout << std::endl;
+  	}
+  	
   	j1_r.draw(env_image);
   	
 	// Flip vertical entire image

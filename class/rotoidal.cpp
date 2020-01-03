@@ -6,10 +6,26 @@ void Rotoidal::draw(cv::Mat image)
 {
 	std::cout << "drawing rotoidal joint \n";
 	
+	cv::Scalar color = cv::Scalar(0, 0, 0);
+	
 	circle( image,
-      origin,
-      ARROW_LENGTH,
+      position,
+      0,
       color,
-      thickness,
-      LINE_8 );
+      THICKNESS,
+      cv::LINE_8 );
+	
+	circle( image,
+      position,
+      RADIUS_INNER_CIRCLE,
+      color,
+      THICKNESS,
+      cv::LINE_8 );
+      
+   circle( image,
+      position,
+      RADIUS_OUTER_CIRCLE,
+      color,
+      THICKNESS,
+      cv::LINE_8 );
 }
