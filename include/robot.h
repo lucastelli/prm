@@ -13,10 +13,12 @@ class Robot
 		std::vector<Joint*> joints;
 		
 	public:
-		void addJoint(Joint* j);
+		Robot(Joint *zeroJoint, cv::Point referencePos);
+		void addJoint(Joint *j);
 		Joint * getJoint(int index);
 		void computePose();
-		float ** computeDHMatrix(Joint* joint);
+		float * computeDHMatrix(Joint *joint);
+		float * multDHMatrix(float *mat1, float *mat2);
 		/*void draw();*/
 };
 

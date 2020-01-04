@@ -74,24 +74,17 @@ int main(int argc, char** argv)
   	cv::Point yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
   	// Display Robot
-  	j1_r.setPosition(cv::Point(50,50));
-  	j1_r.draw(env_image);
-  	
-  	Robot manipulator;
-  	manipulator.addJoint(&j1_r);
+  	Robot manipulator(&j1_r, cv::Point(0,0));
   	manipulator.addJoint(&j2_r);
   	manipulator.addJoint(&j3_r);
   	
-  	std::cout << manipulator.getJoint(0)->getArm() << std::endl;
-  	
   	manipulator.computePose();
   	
-  	manipulator.computeDHMatrix();
+  	/*std::cout << manipulator.getJoint(0)->getPosition() << std::endl;
+  	std::cout << manipulator.getJoint(1)->getPosition() << std::endl;
+  	std::cout << manipulator.getJoint(2)->getPosition() << std::endl;*/
   	
-  	//std::cout << manipulator.getJoint(0)->getArm() << std::endl;
-  	
-  	/*manipulator.computePose();
-  	std::cout << manipulator.getJoint(0)->getArm();*/
+  
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
