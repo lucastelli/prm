@@ -49,9 +49,9 @@ int main(int argc, char** argv)
 	float l2 = 50;
 	float l3 = 50;
 	
-	float angle_1 = 0;
-	float angle_2 = M_PI/2;
-	float angle_3 = M_PI/3;
+	float angle_1 = M_PI/6;
+	float angle_2 = M_PI/6;
+	float angle_3 = M_PI/6;
 	
 	Rotoidal j1_r(l1, 0, 0, angle_1);
 	Rotoidal j2_r(l2, 0, 0, angle_2);
@@ -83,6 +83,17 @@ int main(int argc, char** argv)
   	
   	manipulator.computePose();
   	manipulator.draw(env_image);
+  	
+  	float *m;
+  	m = manipulator.getJoint(3)->getRotation();
+  	for(int i=0; i<3; i++)
+	{
+		for(int j=0; j<3; j++)
+		{
+			std::cout << m[3*i+j] << " ";
+		}
+		std::cout << std::endl;
+	}
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);

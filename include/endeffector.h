@@ -15,6 +15,7 @@ class EndEffector : public Joint
 		EndEffector(float a, float alpha, float d, float teta);
 		
 		void draw(cv::Mat image);
+		cv::Point rotate(cv::Point vect);
 };
 
 #endif

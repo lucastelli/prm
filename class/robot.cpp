@@ -23,6 +23,7 @@ void Robot::computePose()
 	float offset_y = joints.at(0)->getPosition().y;
 	m = computeDHMatrix(joints.at(0));
 	joints.at(1)->setPosition(cv::Point(m[4*0+3] + offset_x, m[4*1+3] + offset_y));
+	joints.at(1)->setRotation(m);
 	
 	/*p = computeDHMatrix(joints.at(1));
 	m = multDHMatrix(m, p);
@@ -40,6 +41,7 @@ void Robot::computePose()
 		p = computeDHMatrix(joints.at(i));
 		m = multDHMatrix(m, p);
 		joints.at(i+1)->setPosition(cv::Point(m[4*0+3] + offset_x, m[4*1+3] + offset_y));
+		joints.at(i+1)->setRotation(m);
 	}
 }
 

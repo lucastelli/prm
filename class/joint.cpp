@@ -32,3 +32,29 @@ void Joint::setPosition(cv::Point p)
 {
 	position = p;
 }
+
+float * Joint::getRotation()
+{
+	return &rotationMatrix[0][0];
+}
+
+void Joint::setRotation(float *matrix)
+{
+	for(int i=0; i<3; i++)
+	{
+		for(int j=0; j<3; j++)
+		{
+			rotationMatrix[i][j] = matrix[4*i+j];
+		}
+	}
+}
+
+// Only 2D function
+cv::Point Joint::rotate(cv::Point vect)
+{
+	cv::Point result;
+	result.x = rotationMatrix[0][0]*vect.x + rotationMatrix[0][1]*vect.y;
+	result.y = rotationMatrix[1][0]*vect.x + rotationMatrix[1][1]*vect.y;
+	
+	return result;
+}
