@@ -6,7 +6,7 @@
 #include "joint.h"
 
 #define RADIUS_INNER_CIRCLE 5
-#define RADIUS_OUTER_CIRCLE 15
+#define RADIUS_OUTER_CIRCLE 10
 #define THICKNESS 1
 
 class Rotoidal : public Joint 

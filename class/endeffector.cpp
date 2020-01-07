@@ -17,27 +17,27 @@ void EndEffector::draw(cv::Mat image)
       position,
       end_finger_right_bottom,
       color,
-      THICKNESS,
+      ENDEFFECTOR_THICKNESS,
       cv::LINE_8 );
       
    line( image,
       end_finger_right_bottom,
       end_finger_right_top,
       color,
-      THICKNESS,
+      ENDEFFECTOR_THICKNESS,
       cv::LINE_8 );
       
    line( image,
       position,
       end_finger_left_bottom,
       color,
-      THICKNESS,
+      ENDEFFECTOR_THICKNESS,
       cv::LINE_8 );
       
    line( image,
       end_finger_left_bottom,
       end_finger_left_top,
       color,
-      THICKNESS,
+      ENDEFFECTOR_THICKNESS,
       cv::LINE_8 );
 }

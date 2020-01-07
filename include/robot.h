@@ -8,6 +8,8 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/highgui.hpp>
 
+#define ARM_THICKNESS 2
+
 class Robot
 {
 	private:
@@ -21,6 +23,7 @@ class Robot
 		float * computeDHMatrix(Joint *joint);
 		float * multDHMatrix(float *mat1, float *mat2);
 		void draw(cv::Mat image);
+		void drawArm(Joint *j1, Joint *j2, cv::Mat image);
 };
 
 #endif

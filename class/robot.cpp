@@ -49,6 +49,12 @@ void Robot::draw(cv::Mat image)
 	{
 		joints.at(i)->draw(image);
 	}
+	
+	// Draw arms
+	for(int i=0; i<joints.size()-1; i++)
+	{
+		drawArm(joints.at(i), joints.at(i+1), image);
+	}
 }
 
 float * Robot::computeDHMatrix(Joint* joint)
@@ -116,4 +122,14 @@ float * Robot::multDHMatrix(float *mat1, float *mat2)
 	return result;
 }
 
-
+void Robot::drawArm(Joint *j1, Joint *j2, cv::Mat image)
+{
+	cv::Scalar color = cv::Scalar(0, 0, 0);	
+	
+	line( image,
+      j1->getPosition(),
+      j2->getPosition(),
+      color,
+      ARM_THICKNESS,
+      cv::LINE_8 );
+}

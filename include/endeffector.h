@@ -6,7 +6,7 @@
 #include "joint.h"
 
 #define FINGER_LENGHT 10
-#define THICKNESS 1
+#define ENDEFFECTOR_THICKNESS 2
 
 class EndEffector : public Joint 
 {
