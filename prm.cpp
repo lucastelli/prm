@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 			with DH convention
 	----------------------------------------------*/
 	
-	float l1 = 50;
+	/*float l1 = 50;
 	float l2 = 50;
 	float l3 = 50;
 	
@@ -54,8 +54,20 @@ int main(int argc, char** argv)
 	float angle_3 = M_PI/6;
 	
 	Rotoidal j1_r(l1, 0, 0, angle_1);
-	Rotoidal j2_r(l2, 0, 0, angle_2);
+	Linear j2_l(l2, 0, 0, angle_2);
 	Rotoidal j3_r(l3, 0, 0, angle_3);
+	EndEffector end(0, 0, 0, 0);*/
+	
+	float d1 = 50;
+	float l2 = 50;
+	float l3 = 50;
+	
+	float angle_1 = M_PI/6;
+	float angle_2 = M_PI/6;
+	
+	Rotoidal j1_r(d1, -M_PI/2, 0, angle_1);
+	Linear j2_l(0, M_PI/2, l2, M_PI/2);
+	Rotoidal j3_r(l3, 0, 0, angle_2);
 	EndEffector end(0, 0, 0, 0);
 	
 	/*----------------------------------------------
@@ -77,23 +89,12 @@ int main(int argc, char** argv)
   	
   	// Display Robot
   	Robot manipulator(&j1_r, cv::Point(50,50));
-  	manipulator.addJoint(&j2_r);
+  	manipulator.addJoint(&j2_l);
   	manipulator.addJoint(&j3_r);
   	manipulator.addJoint(&end);
   	
   	manipulator.computePose();
   	manipulator.draw(env_image);
-  	
-  	float *m;
-  	m = manipulator.getJoint(3)->getRotation();
-  	for(int i=0; i<3; i++)
-	{
-		for(int j=0; j<3; j++)
-		{
-			std::cout << m[3*i+j] << " ";
-		}
-		std::cout << std::endl;
-	}
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
