@@ -4,7 +4,7 @@ Rotoidal::Rotoidal(float a, float alpha, float d, float teta) : Joint(a, alpha, 
 
 void Rotoidal::draw(cv::Mat image)
 {
-	std::cout << "drawing rotoidal joint \n";
+	std::cout << "drawing rotoidal joint at position " << position << std::endl;
 	
 	cv::Scalar color = cv::Scalar(0, 0, 0);
 	

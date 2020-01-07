@@ -19,8 +19,10 @@ Joint * Robot::getJoint(int index)
 void Robot::computePose()
 {
 	float *m, *p; 
-	m = computeDHMatrix(joints.at(0));	
-	joints.at(1)->setPosition(cv::Point(m[4*0+3], m[4*1+3]));
+	float offset_x = joints.at(0)->getPosition().x;
+	float offset_y = joints.at(0)->getPosition().y;
+	m = computeDHMatrix(joints.at(0));
+	joints.at(1)->setPosition(cv::Point(m[4*0+3] + offset_x, m[4*1+3] + offset_y));
 	
 	/*p = computeDHMatrix(joints.at(1));
 	m = multDHMatrix(m, p);
@@ -33,12 +35,20 @@ void Robot::computePose()
 		std::cout << std::endl;
 	}*/
 	
-	/*for(int i=1; i<joints.size()-1; i++)
+	for(int i=1; i<joints.size()-1; i++)
 	{
 		p = computeDHMatrix(joints.at(i));
 		m = multDHMatrix(m, p);
-		joints.at(i+1)->setPosition(cv::Point(m[4*0+3], m[4*1+3]));
-	}*/
+		joints.at(i+1)->setPosition(cv::Point(m[4*0+3] + offset_x, m[4*1+3] + offset_y));
+	}
+}
+
+void Robot::draw(cv::Mat image)
+{
+	for(int i=0; i<joints.size(); i++)
+	{
+		joints.at(i)->draw(image);
+	}
 }
 
 float * Robot::computeDHMatrix(Joint* joint)

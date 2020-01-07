@@ -3,10 +3,6 @@
 
 #include <iostream>
 
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-
 #include "joint.h"
 
 #define RADIUS_INNER_CIRCLE 5

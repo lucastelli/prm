@@ -2,6 +2,7 @@
 #define ROBOT_H_
 
 #include "joint.h"
+#include "endeffector.h"
 
 #include <opencv2/core.hpp>
 #include <opencv2/imgproc.hpp>
@@ -19,7 +20,7 @@ class Robot
 		void computePose();
 		float * computeDHMatrix(Joint *joint);
 		float * multDHMatrix(float *mat1, float *mat2);
-		/*void draw();*/
+		void draw(cv::Mat image);
 };
 
 #endif

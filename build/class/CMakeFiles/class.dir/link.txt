@@ -1,2 +1,2 @@
-/usr/bin/ar qc libclass.a  CMakeFiles/class.dir/joint.cpp.o CMakeFiles/class.dir/linear.cpp.o CMakeFiles/class.dir/robot.cpp.o CMakeFiles/class.dir/rotoidal.cpp.o
+/usr/bin/ar qc libclass.a  CMakeFiles/class.dir/endeffector.cpp.o CMakeFiles/class.dir/joint.cpp.o CMakeFiles/class.dir/linear.cpp.o CMakeFiles/class.dir/robot.cpp.o CMakeFiles/class.dir/rotoidal.cpp.o
 /usr/bin/ranlib libclass.a

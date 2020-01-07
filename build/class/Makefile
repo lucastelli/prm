@@ -125,6 +125,33 @@ class/fast:
 	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/build
 .PHONY : class/fast
 
+endeffector.o: endeffector.cpp.o
+
+.PHONY : endeffector.o
+
+# target to build an object file
+endeffector.cpp.o:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/endeffector.cpp.o
+.PHONY : endeffector.cpp.o
+
+endeffector.i: endeffector.cpp.i
+
+.PHONY : endeffector.i
+
+# target to preprocess a source file
+endeffector.cpp.i:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/endeffector.cpp.i
+.PHONY : endeffector.cpp.i
+
+endeffector.s: endeffector.cpp.s
+
+.PHONY : endeffector.s
+
+# target to generate assembly for a file
+endeffector.cpp.s:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/endeffector.cpp.s
+.PHONY : endeffector.cpp.s
+
 joint.o: joint.cpp.o
 
 .PHONY : joint.o
@@ -242,6 +269,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... class"
 	@echo "... edit_cache"
+	@echo "... endeffector.o"
+	@echo "... endeffector.i"
+	@echo "... endeffector.s"
 	@echo "... joint.o"
 	@echo "... joint.i"
 	@echo "... joint.s"

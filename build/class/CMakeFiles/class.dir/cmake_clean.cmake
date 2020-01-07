@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/class.dir/endeffector.cpp.o"
   "CMakeFiles/class.dir/joint.cpp.o"
   "CMakeFiles/class.dir/linear.cpp.o"
   "CMakeFiles/class.dir/robot.cpp.o"

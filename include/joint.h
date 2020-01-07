@@ -10,6 +10,7 @@
 
 class Rotoidal;
 class Linear;
+class EndEffector;
 
 class Joint
 {

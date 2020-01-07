@@ -10,6 +10,7 @@
 #include "joint.h"
 #include "rotoidal.h"
 #include "linear.h"
+#include "endeffector.h"
 #include "robot.h"
 #include "prmConfig.h"
 
@@ -48,13 +49,14 @@ int main(int argc, char** argv)
 	float l2 = 50;
 	float l3 = 50;
 	
-	float angle_1 = M_PI/6;
-	float angle_2 = 0;
-	float angle_3 = 0;
+	float angle_1 = 0;
+	float angle_2 = M_PI/2;
+	float angle_3 = M_PI/3;
 	
 	Rotoidal j1_r(l1, 0, 0, angle_1);
 	Rotoidal j2_r(l2, 0, 0, angle_2);
 	Rotoidal j3_r(l3, 0, 0, angle_3);
+	EndEffector end(0, 0, 0, 0);
 	
 	/*----------------------------------------------
 		Display the environment: reference frame, robot, obstacles, 
@@ -74,17 +76,13 @@ int main(int argc, char** argv)
   	cv::Point yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
   	// Display Robot
-  	Robot manipulator(&j1_r, cv::Point(0,0));
+  	Robot manipulator(&j1_r, cv::Point(50,50));
   	manipulator.addJoint(&j2_r);
   	manipulator.addJoint(&j3_r);
+  	manipulator.addJoint(&end);
   	
   	manipulator.computePose();
-  	
-  	/*std::cout << manipulator.getJoint(0)->getPosition() << std::endl;
-  	std::cout << manipulator.getJoint(1)->getPosition() << std::endl;
-  	std::cout << manipulator.getJoint(2)->getPosition() << std::endl;*/
-  	
-  
+  	manipulator.draw(env_image);
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);

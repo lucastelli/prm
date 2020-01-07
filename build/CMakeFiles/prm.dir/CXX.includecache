@@ -6,6 +6,12 @@
 
 #IncludeRegexTransform: 
 
+../include/endeffector.h
+iostream
+-
+joint.h
+../include/joint.h
+
 ../include/joint.h
 cmath
 -
@@ -27,6 +33,8 @@ joint.h
 ../include/robot.h
 joint.h
 ../include/joint.h
+endeffector.h
+../include/endeffector.h
 opencv2/core.hpp
 -
 opencv2/imgproc.hpp
@@ -36,12 +44,6 @@ opencv2/highgui.hpp
 
 ../include/rotoidal.h
 iostream
--
-opencv2/core.hpp
--
-opencv2/imgproc.hpp
--
-opencv2/highgui.hpp
 -
 joint.h
 ../include/joint.h
@@ -67,6 +69,8 @@ rotoidal.h
 /home/luca/software/projectACA/project/rotoidal.h
 linear.h
 /home/luca/software/projectACA/project/linear.h
+endeffector.h
+/home/luca/software/projectACA/project/endeffector.h
 robot.h
 /home/luca/software/projectACA/project/robot.h
 prmConfig.h
