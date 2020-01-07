@@ -10,7 +10,14 @@ void Rotoidal::draw(cv::Mat image)
 	
 	circle( image,
       position,
-      0,
+      RADIUS_OUTER_CIRCLE,
+      cv::Scalar(255, 255, 255),
+      -1, // Filled circle
+      cv::LINE_8 );
+      
+   circle( image,
+      position,
+      RADIUS_OUTER_CIRCLE,
       color,
       THICKNESS,
       cv::LINE_8 );
@@ -18,13 +25,6 @@ void Rotoidal::draw(cv::Mat image)
 	circle( image,
       position,
       RADIUS_INNER_CIRCLE,
-      color,
-      THICKNESS,
-      cv::LINE_8 );
-      
-   circle( image,
-      position,
-      RADIUS_OUTER_CIRCLE,
       color,
       THICKNESS,
       cv::LINE_8 );

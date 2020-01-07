@@ -45,15 +45,16 @@ void Robot::computePose()
 
 void Robot::draw(cv::Mat image)
 {
-	for(int i=0; i<joints.size(); i++)
-	{
-		joints.at(i)->draw(image);
-	}
-	
 	// Draw arms
 	for(int i=0; i<joints.size()-1; i++)
 	{
 		drawArm(joints.at(i), joints.at(i+1), image);
+	}
+	
+	// Draw joints
+	for(int i=0; i<joints.size(); i++)
+	{
+		joints.at(i)->draw(image);
 	}
 }
 
