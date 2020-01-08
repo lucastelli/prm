@@ -70,6 +70,13 @@ int main(int argc, char** argv)
 	Rotoidal j3_r(l3, 0, 0, angle_2);
 	EndEffector end;
 	
+	// Create robot object
+	cv::Point origin(FRAME_OFFSET, FRAME_OFFSET);
+	Robot manipulator(&j1_r, origin);
+  	manipulator.addJoint(&j2_l);
+  	manipulator.addJoint(&j3_r);
+  	manipulator.addJoint(&end);
+	
 	/*----------------------------------------------
 		Display the environment: reference frame, robot, obstacles, 
 			free robot configurations, optimal path
@@ -83,29 +90,14 @@ int main(int argc, char** argv)
   	cv::Mat map_y(env_image.size(), CV_32FC1);
   	
   	// Define and display reference frame
-  	cv::Point origin(FRAME_OFFSET, FRAME_OFFSET);
+  	
   	cv::Point xAxis = drawVector(env_image, origin, AXIS_LENGTH, 0, Scalar(255, 0, 0));
   	cv::Point yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
   	// Display Robot
-  	Robot manipulator(&j1_r, origin);
-  	manipulator.addJoint(&j2_l);
-  	manipulator.addJoint(&j3_r);
-  	manipulator.addJoint(&end);
   	
   	manipulator.computePose();
   	manipulator.draw(env_image);
-  	
-  	float *r;
-  	r = manipulator.getJoint(1)->getRotation();
-  	for(int i=0; i<3; i++)
-	{
-		for(int j=0; j<3; j++)
-		{
-			std::cout << r[3*i+j] << " ";
-		}
-		std::cout << std::endl;
-	}
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
