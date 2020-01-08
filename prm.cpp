@@ -18,7 +18,7 @@
 #define WINDOW 400
 
 // Frame Reference Parameters //
-#define FRAME_OFFSET 10
+#define FRAME_OFFSET 30
 #define LABEL_OFFSET 2
 #define AXIS_LENGTH 50
 #define ARROW_LENGTH 6
@@ -58,9 +58,9 @@ int main(int argc, char** argv)
 	Rotoidal j3_r(l3, 0, 0, angle_3);
 	EndEffector end(0, 0, 0, 0);*/
 	
-	float d1 = 40;
-	float l2 = 50;
-	float l3 = 50;
+	float d1 = 140;
+	float l2 = 150;
+	float l3 = 150;
 	
 	float angle_1 = M_PI/12;
 	float angle_2 = M_PI/6;
@@ -88,7 +88,7 @@ int main(int argc, char** argv)
   	cv::Point yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
   	// Display Robot
-  	Robot manipulator(&j1_r, cv::Point(50,50));
+  	Robot manipulator(&j1_r, origin);
   	manipulator.addJoint(&j2_l);
   	manipulator.addJoint(&j3_r);
   	manipulator.addJoint(&end);
