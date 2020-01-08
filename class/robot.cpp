@@ -134,5 +134,5 @@ void Robot::drawArm(Joint *j1, Joint *j2, cv::Mat image)
       j2->getPosition(),
       color,
       ARM_THICKNESS,
-      cv::LINE_8 );
+      cv::LINE_AA );
 }

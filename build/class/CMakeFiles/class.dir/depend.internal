@@ -211,8 +211,10 @@ class/CMakeFiles/class.dir/joint.cpp.o
  /usr/local/include/opencv4/opencv2/video/tracking.hpp
  /usr/local/include/opencv4/opencv2/videoio.hpp
 class/CMakeFiles/class.dir/linear.cpp.o
+ ../include/endeffector.h
  ../include/joint.h
  ../include/linear.h
+ ../include/robot.h
  /home/luca/software/projectACA/project/class/linear.cpp
  /usr/local/include/opencv4/opencv2/calib3d.hpp
  /usr/local/include/opencv4/opencv2/core.hpp

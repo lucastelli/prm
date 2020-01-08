@@ -210,8 +210,10 @@ class/CMakeFiles/class.dir/joint.cpp.o: /usr/local/include/opencv4/opencv2/video
 class/CMakeFiles/class.dir/joint.cpp.o: /usr/local/include/opencv4/opencv2/video/tracking.hpp
 class/CMakeFiles/class.dir/joint.cpp.o: /usr/local/include/opencv4/opencv2/videoio.hpp
 
+class/CMakeFiles/class.dir/linear.cpp.o: ../include/endeffector.h
 class/CMakeFiles/class.dir/linear.cpp.o: ../include/joint.h
 class/CMakeFiles/class.dir/linear.cpp.o: ../include/linear.h
+class/CMakeFiles/class.dir/linear.cpp.o: ../include/robot.h
 class/CMakeFiles/class.dir/linear.cpp.o: ../class/linear.cpp
 class/CMakeFiles/class.dir/linear.cpp.o: /usr/local/include/opencv4/opencv2/calib3d.hpp
 class/CMakeFiles/class.dir/linear.cpp.o: /usr/local/include/opencv4/opencv2/core.hpp

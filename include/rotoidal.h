@@ -7,7 +7,7 @@
 
 #define RADIUS_INNER_CIRCLE 5
 #define RADIUS_OUTER_CIRCLE 10
-#define THICKNESS 1
+#define ROTOIDAL_THICKNESS 1
 
 class Rotoidal : public Joint 
 {

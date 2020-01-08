@@ -58,17 +58,17 @@ int main(int argc, char** argv)
 	Rotoidal j3_r(l3, 0, 0, angle_3);
 	EndEffector end(0, 0, 0, 0);*/
 	
-	float d1 = 50;
+	float d1 = 40;
 	float l2 = 50;
 	float l3 = 50;
 	
-	float angle_1 = M_PI/6;
+	float angle_1 = M_PI/12;
 	float angle_2 = M_PI/6;
 	
 	Rotoidal j1_r(d1, -M_PI/2, 0, angle_1);
-	Linear j2_l(0, M_PI/2, l2, M_PI/2);
+	Linear j2_l(0, M_PI/2, l2, 0);
 	Rotoidal j3_r(l3, 0, 0, angle_2);
-	EndEffector end(0, 0, 0, 0);
+	EndEffector end;
 	
 	/*----------------------------------------------
 		Display the environment: reference frame, robot, obstacles, 
@@ -95,6 +95,17 @@ int main(int argc, char** argv)
   	
   	manipulator.computePose();
   	manipulator.draw(env_image);
+  	
+  	float *r;
+  	r = manipulator.getJoint(1)->getRotation();
+  	for(int i=0; i<3; i++)
+	{
+		for(int j=0; j<3; j++)
+		{
+			std::cout << r[3*i+j] << " ";
+		}
+		std::cout << std::endl;
+	}
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
