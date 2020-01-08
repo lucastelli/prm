@@ -56,9 +56,9 @@ int main(int argc, char** argv)
 	Rotoidal j1_r(l1, 0, 0, angle_1);
 	Linear j2_l(l2, 0, 0, angle_2);
 	Rotoidal j3_r(l3, 0, 0, angle_3);
-	EndEffector end(0, 0, 0, 0);*/
+	EndEffector end;*/
 	
-	float d1 = 140;
+	/*float d1 = 140;
 	float l2 = 150;
 	float l3 = 150;
 	
@@ -68,13 +68,24 @@ int main(int argc, char** argv)
 	Rotoidal j1_r(d1, -M_PI/2, 0, angle_1);
 	Linear j2_l(0, M_PI/2, l2, 0);
 	Rotoidal j3_r(l3, 0, 0, angle_2);
+	EndEffector end;*/
+	
+	float l1 = 150;
+	float l2 = 150;
+	float l3 = 150;
+	
+	float angle_1 = M_PI/12;
+	
+	Rotoidal j1_r(l1, -M_PI/2, 0, angle_1);
+	Linear j2_l(0, M_PI/2, l2, 0);
+	Linear j3_l(l3, 0, 0, 0);
 	EndEffector end;
 	
 	// Create robot object
 	cv::Point origin(FRAME_OFFSET, FRAME_OFFSET);
 	Robot manipulator(&j1_r, origin);
   	manipulator.addJoint(&j2_l);
-  	manipulator.addJoint(&j3_r);
+  	manipulator.addJoint(&j3_l);
   	manipulator.addJoint(&end);
 	
 	/*----------------------------------------------
