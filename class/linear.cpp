@@ -39,7 +39,7 @@ void Linear::draw(cv::Mat image)
 		image,
 		vertices,
 		4,
-		cv::Scalar(0, 0, 255),
+		cv::Scalar(255, 255, 255),
 		cv::LINE_AA
 	);
 	
