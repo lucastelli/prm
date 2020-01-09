@@ -22,8 +22,11 @@ class Joint
 	
 		cv::Point position;				// position of the joint in the workspace
 		float rotationMatrix[3][3];	// rotation of the joint in the workspace
-	
+		
+		float **config;
+		int n_var = 0;
 	public:
+		
 		Joint(float arm_lenght, float alpha_angle, float distance_lenght, float teta_angle);	
 		float getArm();	
 		float getAlpha();
@@ -33,6 +36,15 @@ class Joint
 		void setPosition(cv::Point p);
 		float * getRotation();
 		void setRotation(float *matrix);
+		
+		void setConfiguration(float **param, int num);
+		float ** getConfiguration();
+		int getNumParameters();
+		float * getParameter(int index);
+		float * getPointerArm();
+		float * getPointerAlpha();
+		float * getPointerDistance();
+		float * getPointerTeta();
 		
 		virtual void draw(cv::Mat image) = 0;
 		virtual cv::Point rotate(cv::Point vect);

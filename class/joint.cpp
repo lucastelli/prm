@@ -49,6 +49,63 @@ void Joint::setRotation(float *matrix)
 	}
 }
 
+float * Joint::getPointerArm()
+{
+	return &arm;
+}
+
+float * Joint::getPointerAlpha()
+{
+	return &alpha;
+}
+
+float * Joint::getPointerDistance()
+{
+	return &distance;
+}
+
+float * Joint::getPointerTeta()
+{
+	return &teta;
+}
+
+void Joint::setConfiguration(float **param, int num)
+{
+	config = (float**)malloc(num*sizeof(*param[0]));
+	for(int i=0; i<num; i++)
+	{
+		config[i] = param[i];
+	}
+	n_var = num;
+}
+
+float * Joint::getParameter(int index)
+{
+	if(index < n_var)
+	{
+		return config[index];
+	}
+	
+	return NULL;
+}
+
+float ** Joint::getConfiguration()
+{
+	std::cout << "[";
+	for(int i=0; i<n_var-1; i++)
+	{
+		std::cout << *config[i] << ", ";
+	}
+	std::cout << *config[n_var-1] << "]" << std::endl;
+	
+	return config;
+}
+
+int Joint::getNumParameters()
+{
+	return n_var;
+}
+
 // Only 2D function
 cv::Point Joint::rotate(cv::Point vect)
 {

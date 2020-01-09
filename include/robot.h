@@ -14,11 +14,14 @@ class Robot
 {
 	private:
 		std::vector<Joint*> joints;
+		std::vector<float*> robot_config;
 		
 	public:
 		Robot(Joint *zeroJoint, cv::Point referencePos);
 		void addJoint(Joint *j);
 		Joint * getJoint(int index);
+		void setConfiguration();
+		void getConfiguration();
 		void computePose();
 		float * computeDHMatrix(Joint *joint);
 		float * multDHMatrix(float *mat1, float *mat2);

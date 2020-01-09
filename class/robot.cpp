@@ -16,6 +16,29 @@ Joint * Robot::getJoint(int index)
 	return joints.at(index);
 }
 
+void Robot::setConfiguration()
+{
+	int num_joint_parameters = 0;
+	for(int i=0; i<joints.size(); i++)
+	{
+		num_joint_parameters = joints.at(i)->getNumParameters();
+		for(int j=0; j<num_joint_parameters; j++)
+		{
+			robot_config.push_back(joints.at(i)->getParameter(j));
+		}
+	}
+}
+
+void Robot::getConfiguration()
+{
+	std::cout << "[";
+	for(int i=0; i<robot_config.size()-1; i++)
+	{
+		std::cout << *robot_config.at(i) << ", ";
+	}
+	std::cout << *robot_config.at(robot_config.size()-1) << "]" << std::endl;
+}
+
 void Robot::computePose()
 {
 	float *m, *p; 
