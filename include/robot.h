@@ -20,7 +20,7 @@ class Robot
 		Robot(Joint *zeroJoint, cv::Point referencePos);
 		void addJoint(Joint *j);
 		Joint * getJoint(int index);
-		void setConfiguration();
+		void setConfiguration(float **config, int num_var);
 		void getConfiguration();
 		void computePose();
 		float * computeDHMatrix(Joint *joint);

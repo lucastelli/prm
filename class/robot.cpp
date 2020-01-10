@@ -16,16 +16,11 @@ Joint * Robot::getJoint(int index)
 	return joints.at(index);
 }
 
-void Robot::setConfiguration()
+void Robot::setConfiguration(float **config, int num_var)
 {
-	int num_joint_parameters = 0;
-	for(int i=0; i<joints.size(); i++)
+	for(int i=0; i<num_var; i++)
 	{
-		num_joint_parameters = joints.at(i)->getNumParameters();
-		for(int j=0; j<num_joint_parameters; j++)
-		{
-			robot_config.push_back(joints.at(i)->getParameter(j));
-		}
+		robot_config.push_back(config[i]);
 	}
 }
 

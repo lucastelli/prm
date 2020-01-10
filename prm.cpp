@@ -88,12 +88,9 @@ int main(int argc, char** argv)
   	manipulator.addJoint(&j3_l);
   	manipulator.addJoint(&end);
   	
-  	float *vet[] = {j1_r.getPointerTeta(), j1_r.getPointerArm()};
-  	j1_r.setConfiguration(vet, 2);
-  	vet[0] = j2_l.getPointerDistance();
-  	j2_l.setConfiguration(vet, 1);
+  	float *vet[] = {j1_r.getPointerTeta(), j1_r.getPointerArm(), j2_l.getPointerDistance()};
   	
-  	manipulator.setConfiguration();
+  	manipulator.setConfiguration(vet, 3);
   	manipulator.getConfiguration();
 	
 	/*----------------------------------------------
