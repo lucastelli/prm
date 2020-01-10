@@ -98,19 +98,23 @@ float * Robot::computeDHMatrix(Joint* joint)
 	float *matrix;
 	matrix = (float*)malloc(4*4*sizeof(float));
 	
-	matrix[0] = cos(teta);
-	matrix[1] = -sin(teta)*cos(alpha);
+	float cos_teta, cos_alpha;
+	cos_teta = (teta == (float)M_PI/2 || teta == (float)-M_PI/2) ? 0 : cos(teta);
+	cos_alpha = (alpha == (float)M_PI/2 || alpha == (float)-M_PI/2) ? 0 : cos(alpha);
+	
+	matrix[0] = cos_teta;
+	matrix[1] = -sin(teta)*cos_alpha;
 	matrix[2] = sin(teta)*sin(alpha);
-	matrix[3] = arm*cos(teta);
+	matrix[3] = arm*cos_teta;
 	
 	matrix[4] = sin(teta);
-	matrix[5] = cos(teta)*cos(alpha);
-	matrix[6] = -cos(teta)*sin(alpha);
+	matrix[5] = cos_teta*cos_alpha;
+	matrix[6] = -cos_teta*sin(alpha);
 	matrix[7] = arm*sin(teta);
 	
 	matrix[8] = 0;
 	matrix[9] = sin(alpha);
-	matrix[10] = cos(alpha);
+	matrix[10] = cos_alpha;
 	matrix[11] = distance;
 	
 	matrix[12] = 0;

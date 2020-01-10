@@ -21,7 +21,7 @@ class Joint
 		float teta;			// angle around z(i-1) between x(i-1) and x(i) axes (positive counter-clockwise)
 	
 		cv::Point position;				// position of the joint in the workspace
-		float rotationMatrix[3][3];	// rotation of the joint in the workspace
+		float rotationMatrix[3][3] = {0};	// rotation of the joint in the workspace
 		
 		float **config;
 		int n_var = 0;

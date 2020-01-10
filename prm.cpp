@@ -95,7 +95,6 @@ int main(int argc, char** argv)
   	
   	manipulator.setConfiguration();
   	manipulator.getConfiguration();
-  	
 	
 	/*----------------------------------------------
 		Display the environment: reference frame, robot, obstacles, 
