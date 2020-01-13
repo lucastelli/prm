@@ -22,6 +22,7 @@ class Robot
 		Joint * getJoint(int index);
 		void setConfiguration(float **config, int num_var);
 		void getConfiguration();
+		void editConfiguration(float *new_config, int num);
 		void computePose();
 		float * computeDHMatrix(Joint *joint);
 		float * multDHMatrix(float *mat1, float *mat2);

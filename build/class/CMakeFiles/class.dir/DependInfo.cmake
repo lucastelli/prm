@@ -4,9 +4,11 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
+  "/home/luca/software/projectACA/project/class/MobileRobot.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/MobileRobot.cpp.o"
   "/home/luca/software/projectACA/project/class/endeffector.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/endeffector.cpp.o"
   "/home/luca/software/projectACA/project/class/joint.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/joint.cpp.o"
   "/home/luca/software/projectACA/project/class/linear.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/linear.cpp.o"
+  "/home/luca/software/projectACA/project/class/obstacle.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/obstacle.cpp.o"
   "/home/luca/software/projectACA/project/class/robot.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/robot.cpp.o"
   "/home/luca/software/projectACA/project/class/rotoidal.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/rotoidal.cpp.o"
   )

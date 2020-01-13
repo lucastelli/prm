@@ -5,6 +5,8 @@ CMakeFiles/prm.dir/prm.cpp.o
  ../include/endeffector.h
  ../include/joint.h
  ../include/linear.h
+ ../include/mobilerobot.h
+ ../include/obstacle.h
  ../include/robot.h
  ../include/rotoidal.h
  /home/luca/software/projectACA/project/prm.cpp

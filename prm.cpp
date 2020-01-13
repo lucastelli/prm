@@ -13,6 +13,8 @@
 #include "endeffector.h"
 #include "robot.h"
 #include "prmConfig.h"
+#include "obstacle.h"
+#include "mobilerobot.h"
 
 // Window Parameters //
 #define WINDOW 400
@@ -89,31 +91,40 @@ int main(int argc, char** argv)
   	manipulator.addJoint(&end);
   	
   	float *vet[] = {j1_r.getPointerTeta(), j1_r.getPointerArm(), j2_l.getPointerDistance()};
-  	
   	manipulator.setConfiguration(vet, 3);
   	manipulator.getConfiguration();
-	
+  	
 	/*----------------------------------------------
 		Display the environment: reference frame, robot, obstacles, 
 			free robot configurations, optimal path
 	----------------------------------------------*/
 	
 	char env_window[] = "PRM Environment";
+	float input_config[3] = {0};
 	
 	cv::Mat env_image( WINDOW, WINDOW, CV_8UC3, cv::Scalar(255,255,255));
   	cv::Mat flip_env_image( WINDOW, WINDOW, CV_8UC3, cv::Scalar(255,255,255));
   	cv::Mat map_x(env_image.size(), CV_32FC1);
   	cv::Mat map_y(env_image.size(), CV_32FC1);
   	
-  	// Define and display reference frame
+  	// Define and display reference frame	
+  	cv::Point xAxis, yAxis;
   	
-  	cv::Point xAxis = drawVector(env_image, origin, AXIS_LENGTH, 0, Scalar(255, 0, 0));
-  	cv::Point yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
+  	xAxis = drawVector(env_image, origin, AXIS_LENGTH, 0, Scalar(255, 0, 0));
+  	yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
   	// Display Robot
+  	//manipulator.computePose();
+  	//manipulator.draw(env_image);
+  	struct point_t pos = {50, 50};
+  	MobileRobot mobile(pos);
+  	mobile.getRotation();
+  	mobile.draw(env_image);
   	
-  	manipulator.computePose();
-  	manipulator.draw(env_image);
+  	// Display obstacles
+  	cv::Point ob_pts[] = {cv::Point(50,50), cv::Point(150,50), cv::Point(100,100)}; 
+  	Obstacle ob = Obstacle(ob_pts, 3);
+  	ob.draw(env_image);
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -126,6 +137,31 @@ int main(int argc, char** argv)
 	// Display the flip image
 	imshow( env_window, flip_env_image );
 	waitKey( 0 );
+	
+	/*while(true)
+	{ 	
+		std::cout << "Inserisci configurazione [j1_teta j1_arm j2_distance]" << std::endl;
+		scanf("%f %f %f", &input_config[0], &input_config[1], &input_config[2]);
+		
+		env_image.setTo(Scalar(255,255,255));
+		flip_env_image.setTo(Scalar(255,255,255));
+		
+		manipulator.editConfiguration(input_config, 3);
+	  	manipulator.draw(env_image);
+	  	
+	  	xAxis = drawVector(env_image, origin, AXIS_LENGTH, 0, Scalar(255, 0, 0));
+  		yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
+  	
+	  	updateMap(map_x, map_y);
+		remap( env_image, flip_env_image, map_x, map_y, INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0) );
+		
+		drawLabel(flip_env_image, "x", xAxis);
+		drawLabel(flip_env_image, "y", yAxis);
+		
+		imshow( env_window, flip_env_image );
+		waitKey( 100 );
+	}*/
+	
 	return(0);
 }
 

@@ -34,6 +34,15 @@ void Robot::getConfiguration()
 	std::cout << *robot_config.at(robot_config.size()-1) << "]" << std::endl;
 }
 
+void Robot::editConfiguration(float *new_config, int num)
+{
+	for(int i=0; i<num; i++)
+	{
+		*robot_config.at(i) = new_config[i];
+	}
+	computePose(); //update robot pose with new config
+}
+
 void Robot::computePose()
 {
 	float *m, *p; 

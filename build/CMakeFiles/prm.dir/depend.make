@@ -4,6 +4,8 @@
 CMakeFiles/prm.dir/prm.cpp.o: ../include/endeffector.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/joint.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/linear.h
+CMakeFiles/prm.dir/prm.cpp.o: ../include/mobilerobot.h
+CMakeFiles/prm.dir/prm.cpp.o: ../include/obstacle.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/robot.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/rotoidal.h
 CMakeFiles/prm.dir/prm.cpp.o: ../prm.cpp

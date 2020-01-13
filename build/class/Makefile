@@ -125,6 +125,33 @@ class/fast:
 	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/build
 .PHONY : class/fast
 
+MobileRobot.o: MobileRobot.cpp.o
+
+.PHONY : MobileRobot.o
+
+# target to build an object file
+MobileRobot.cpp.o:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/MobileRobot.cpp.o
+.PHONY : MobileRobot.cpp.o
+
+MobileRobot.i: MobileRobot.cpp.i
+
+.PHONY : MobileRobot.i
+
+# target to preprocess a source file
+MobileRobot.cpp.i:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/MobileRobot.cpp.i
+.PHONY : MobileRobot.cpp.i
+
+MobileRobot.s: MobileRobot.cpp.s
+
+.PHONY : MobileRobot.s
+
+# target to generate assembly for a file
+MobileRobot.cpp.s:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/MobileRobot.cpp.s
+.PHONY : MobileRobot.cpp.s
+
 endeffector.o: endeffector.cpp.o
 
 .PHONY : endeffector.o
@@ -206,6 +233,33 @@ linear.cpp.s:
 	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/linear.cpp.s
 .PHONY : linear.cpp.s
 
+obstacle.o: obstacle.cpp.o
+
+.PHONY : obstacle.o
+
+# target to build an object file
+obstacle.cpp.o:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/obstacle.cpp.o
+.PHONY : obstacle.cpp.o
+
+obstacle.i: obstacle.cpp.i
+
+.PHONY : obstacle.i
+
+# target to preprocess a source file
+obstacle.cpp.i:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/obstacle.cpp.i
+.PHONY : obstacle.cpp.i
+
+obstacle.s: obstacle.cpp.s
+
+.PHONY : obstacle.s
+
+# target to generate assembly for a file
+obstacle.cpp.s:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/obstacle.cpp.s
+.PHONY : obstacle.cpp.s
+
 robot.o: robot.cpp.o
 
 .PHONY : robot.o
@@ -269,6 +323,9 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... class"
 	@echo "... edit_cache"
+	@echo "... MobileRobot.o"
+	@echo "... MobileRobot.i"
+	@echo "... MobileRobot.s"
 	@echo "... endeffector.o"
 	@echo "... endeffector.i"
 	@echo "... endeffector.s"
@@ -278,6 +335,9 @@ help:
 	@echo "... linear.o"
 	@echo "... linear.i"
 	@echo "... linear.s"
+	@echo "... obstacle.o"
+	@echo "... obstacle.i"
+	@echo "... obstacle.s"
 	@echo "... robot.o"
 	@echo "... robot.i"
 	@echo "... robot.s"

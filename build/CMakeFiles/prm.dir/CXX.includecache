@@ -32,6 +32,24 @@ joint.h
 robot.h
 ../include/robot.h
 
+../include/mobilerobot.h
+iostream
+-
+opencv2/core.hpp
+-
+opencv2/imgproc.hpp
+-
+opencv2/highgui.hpp
+-
+
+../include/obstacle.h
+opencv2/core.hpp
+-
+opencv2/imgproc.hpp
+-
+opencv2/highgui.hpp
+-
+
 ../include/robot.h
 joint.h
 ../include/joint.h
@@ -77,6 +95,10 @@ robot.h
 /home/luca/software/projectACA/project/robot.h
 prmConfig.h
 /home/luca/software/projectACA/project/prmConfig.h
+obstacle.h
+/home/luca/software/projectACA/project/obstacle.h
+mobilerobot.h
+/home/luca/software/projectACA/project/mobilerobot.h
 
 /usr/local/include/opencv4/opencv2/calib3d.hpp
 opencv2/core.hpp
