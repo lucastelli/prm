@@ -8,6 +8,7 @@ CMakeFiles/prm.dir/prm.cpp.o: ../include/mobilerobot.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/obstacle.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/robot.h
 CMakeFiles/prm.dir/prm.cpp.o: ../include/rotoidal.h
+CMakeFiles/prm.dir/prm.cpp.o: ../include/structures.h
 CMakeFiles/prm.dir/prm.cpp.o: ../prm.cpp
 CMakeFiles/prm.dir/prm.cpp.o: /usr/local/include/opencv4/opencv2/calib3d.hpp
 CMakeFiles/prm.dir/prm.cpp.o: /usr/local/include/opencv4/opencv2/core.hpp

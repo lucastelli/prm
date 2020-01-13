@@ -15,6 +15,7 @@
 #include "prmConfig.h"
 #include "obstacle.h"
 #include "mobilerobot.h"
+#include "structures.h"
 
 #include <time.h>
 
@@ -44,8 +45,8 @@ int main(int argc, char** argv)
    std::cout << argv[0] << " Version " << prm_VERSION_MAJOR << "."
               << prm_VERSION_MINOR << std::endl;
 	
-	clock_t start, end;
-	start = clock();
+	clock_t time_start, time_end;
+	time_start = clock();
 	/*----------------------------------------------
 		Define 3 arm planar robot manipulator
 			with DH convention
@@ -126,13 +127,36 @@ int main(int argc, char** argv)
   	//mobile.draw(env_image);
   	
   	// Display obstacles
-  	cv::Point ob_pts1[] = {	cv::Point(50,50), cv::Point(50, 100), 
-  									cv::Point(85, 135), cv::Point(135, 135), 
-  									cv::Point(170, 100), cv::Point(170, 50),
-  									cv::Point(135, 15), cv::Point(85, 15)};
-  	cv::Point ob_pts2[] = {cv::Point(0, 400), cv::Point(200, 200), cv::Point(250,250), cv::Point(50,400)};
-  	cv::Point ob_pts3[] = {cv::Point(250, 0), cv::Point(400, 0), cv::Point(400, 400)};
-  	cv::Point ob_pts4[] = {cv::Point(80, 250), cv::Point(150, 200), cv::Point(0, 200)};
+  	struct point_t ob_pts1[] = {	
+  											{50,50}, 
+  											{50, 100},
+  											{85, 135},
+  											{135, 135},
+  											{170, 100},
+  											{170, 50},
+  											{135, 15},
+  											{85, 15}
+  										};
+  										
+  	struct point_t ob_pts2[] = {
+  											{0, 400},
+  											{200, 200},
+  											{250,250},
+  											{50,400}
+  										};
+  										
+  	struct point_t ob_pts3[] = {
+  											{250, 0},
+  											{400, 0},
+  											{400, 400}
+  										};
+  										
+  	struct point_t ob_pts4[] = {
+  											{80, 250},
+  											{150, 200},
+  											{0, 200}
+  										};
+  	
   	Obstacle ob_1 = Obstacle(ob_pts1, 8);
   	Obstacle ob_2 = Obstacle(ob_pts2, 4);
   	Obstacle ob_3 = Obstacle(ob_pts3, 3);
@@ -147,20 +171,16 @@ int main(int argc, char** argv)
 	----------------------------------------------*/
 	
 	//nel caso di un mobile robot
-	struct node 
-	{
-		struct point_t element;
-		int num;
-		struct node **neighbors;
-	};
 	
+	
+	// Sampling Strategy : Uniform Distribution
 	struct point_t *setOfConfig; 
 	setOfConfig = (point_t*)malloc(50 * 50 * sizeof(point_t));
 	
 	for(int i=0; i < 2500; i++)
 	{
-		setOfConfig[i].x = rand() % 400;
-		setOfConfig[i].y = rand() % 400;
+		setOfConfig[i].x = rand() % WINDOW;
+		setOfConfig[i].y = rand() % WINDOW;
 		
 		circle(
 			env_image,
@@ -171,15 +191,17 @@ int main(int argc, char** argv)
 		);
 	}
 	
-	struct node primo, secondo, terzo, quarto;
+	// GJK : Collision Detection Algorithm
+	
+	
+	// test struct node of a graph
+	struct node primo, secondo, terzo;
 	primo.element = setOfConfig[0];
 	primo.num = 2;
 	secondo.element = setOfConfig[1];
 	secondo.num = 2;
 	terzo.element = setOfConfig[2];
 	terzo.num = 2;
-	quarto.element = setOfConfig[3];
-	quarto.num = 3;
 	
 	primo.neighbors = (struct node **)malloc(primo.num * sizeof(struct node));
 	primo.neighbors[0] = &secondo;
@@ -192,16 +214,15 @@ int main(int argc, char** argv)
 	terzo.neighbors = (struct node **)malloc(terzo.num * sizeof(struct node));
 	terzo.neighbors[0] = &primo;
 	terzo.neighbors[1] = &secondo;
-	
-	std::cout << "[" << primo.element.x << ", " << primo.element.y << "]" << std::endl;
-	std::cout << "[" << secondo.element.x << ", " << secondo.element.y << "]" << std::endl;
-	std::cout << "[" << terzo.element.x << ", " << terzo.element.y << "]" << std::endl;
-	
-	MobileRobot mob1(primo.element), mob2(secondo.element), mob3(terzo.element);
-	
+  	
+  	MobileRobot mob1(primo.element);
+  	
+  	struct point_t sup;
+  	struct vec2 dir = {0, 0, 5, 5};
+  	sup = mob1.support(dir);
+  	std::cout << "[" << sup.x << ", " << sup.y << "]" << std::endl;
+  	
   	mob1.draw(env_image);
-  	mob2.draw(env_image);
-  	mob3.draw(env_image);
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -214,9 +235,9 @@ int main(int argc, char** argv)
 	// Display the flip image
 	imshow( env_window, flip_env_image );
 	
-	end = clock();
+	time_end = clock();
 	
-	std::cout << "Execution time: " << double(end - start) / double(CLOCKS_PER_SEC) << std::endl;
+	std::cout << "Execution time: " << double(time_end - time_start) / double(CLOCKS_PER_SEC) << std::endl;
 	
 	waitKey( 0 );
 	
@@ -301,3 +322,12 @@ void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 	putText(img, label, tmp, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0,0,0), 1, LINE_AA);
 }
 
+/*struct point_t getSupport(struct vec2 direction, MobileRobot mobile, Obstacle obj)
+{
+	struct vec2 inv_direction;
+	inv_direction.start.x = - direction.start.x;
+	inv_direction.start.y = - direction.start.y;
+	inv_direction.end.x = - direction.end.x;
+	inv_direction.end.y = - direction.end.y;
+	return mobile.support(direction) - obj.support(inv_direction);
+}*/

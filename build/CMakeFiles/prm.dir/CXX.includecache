@@ -41,6 +41,8 @@ opencv2/imgproc.hpp
 -
 opencv2/highgui.hpp
 -
+structures.h
+../include/structures.h
 
 ../include/obstacle.h
 opencv2/core.hpp
@@ -49,6 +51,8 @@ opencv2/imgproc.hpp
 -
 opencv2/highgui.hpp
 -
+structures.h
+../include/structures.h
 
 ../include/robot.h
 joint.h
@@ -67,6 +71,8 @@ iostream
 -
 joint.h
 ../include/joint.h
+
+../include/structures.h
 
 /home/luca/software/projectACA/project/prm.cpp
 cmath
@@ -99,6 +105,8 @@ obstacle.h
 /home/luca/software/projectACA/project/obstacle.h
 mobilerobot.h
 /home/luca/software/projectACA/project/mobilerobot.h
+structures.h
+/home/luca/software/projectACA/project/structures.h
 time.h
 -
 

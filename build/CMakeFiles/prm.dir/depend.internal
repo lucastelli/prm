@@ -9,6 +9,7 @@ CMakeFiles/prm.dir/prm.cpp.o
  ../include/obstacle.h
  ../include/robot.h
  ../include/rotoidal.h
+ ../include/structures.h
  /home/luca/software/projectACA/project/prm.cpp
  /usr/local/include/opencv4/opencv2/calib3d.hpp
  /usr/local/include/opencv4/opencv2/core.hpp

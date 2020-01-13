@@ -3,6 +3,7 @@
 
 class/CMakeFiles/class.dir/MobileRobot.cpp.o
  ../include/mobilerobot.h
+ ../include/structures.h
  /home/luca/software/projectACA/project/class/MobileRobot.cpp
  /usr/local/include/opencv4/opencv2/calib3d.hpp
  /usr/local/include/opencv4/opencv2/core.hpp
@@ -423,6 +424,7 @@ class/CMakeFiles/class.dir/linear.cpp.o
  /usr/local/include/opencv4/opencv2/videoio.hpp
 class/CMakeFiles/class.dir/obstacle.cpp.o
  ../include/obstacle.h
+ ../include/structures.h
  /home/luca/software/projectACA/project/class/obstacle.cpp
  /usr/local/include/opencv4/opencv2/calib3d.hpp
  /usr/local/include/opencv4/opencv2/core.hpp
