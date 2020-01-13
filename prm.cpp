@@ -16,11 +16,13 @@
 #include "obstacle.h"
 #include "mobilerobot.h"
 
+#include <time.h>
+
 // Window Parameters //
 #define WINDOW 400
 
 // Frame Reference Parameters //
-#define FRAME_OFFSET 30
+#define FRAME_OFFSET 5
 #define LABEL_OFFSET 2
 #define AXIS_LENGTH 50
 #define ARROW_LENGTH 6
@@ -42,6 +44,8 @@ int main(int argc, char** argv)
    std::cout << argv[0] << " Version " << prm_VERSION_MAJOR << "."
               << prm_VERSION_MINOR << std::endl;
 	
+	clock_t start, end;
+	start = clock();
 	/*----------------------------------------------
 		Define 3 arm planar robot manipulator
 			with DH convention
@@ -81,14 +85,14 @@ int main(int argc, char** argv)
 	Rotoidal j1_r(l1, -M_PI/2, 0, angle_1);
 	Linear j2_l(0, M_PI/2, l2, 0);
 	Linear j3_l(l3, 0, 0, 0);
-	EndEffector end;
+	EndEffector endEffector;
 	
 	// Create robot object
 	cv::Point origin(FRAME_OFFSET, FRAME_OFFSET);
 	Robot manipulator(&j1_r, origin);
   	manipulator.addJoint(&j2_l);
   	manipulator.addJoint(&j3_l);
-  	manipulator.addJoint(&end);
+  	manipulator.addJoint(&endEffector);
   	
   	float *vet[] = {j1_r.getPointerTeta(), j1_r.getPointerArm(), j2_l.getPointerDistance()};
   	manipulator.setConfiguration(vet, 3);
@@ -116,15 +120,88 @@ int main(int argc, char** argv)
   	// Display Robot
   	//manipulator.computePose();
   	//manipulator.draw(env_image);
-  	struct point_t pos = {50, 50};
-  	MobileRobot mobile(pos);
-  	mobile.getRotation();
-  	mobile.draw(env_image);
+  	//struct point_t pos = {20, 20};
+  	//MobileRobot mobile(pos);
+  	//mobile.getRotation();
+  	//mobile.draw(env_image);
   	
   	// Display obstacles
-  	cv::Point ob_pts[] = {cv::Point(50,50), cv::Point(150,50), cv::Point(100,100)}; 
-  	Obstacle ob = Obstacle(ob_pts, 3);
-  	ob.draw(env_image);
+  	cv::Point ob_pts1[] = {	cv::Point(50,50), cv::Point(50, 100), 
+  									cv::Point(85, 135), cv::Point(135, 135), 
+  									cv::Point(170, 100), cv::Point(170, 50),
+  									cv::Point(135, 15), cv::Point(85, 15)};
+  	cv::Point ob_pts2[] = {cv::Point(0, 400), cv::Point(200, 200), cv::Point(250,250), cv::Point(50,400)};
+  	cv::Point ob_pts3[] = {cv::Point(250, 0), cv::Point(400, 0), cv::Point(400, 400)};
+  	cv::Point ob_pts4[] = {cv::Point(80, 250), cv::Point(150, 200), cv::Point(0, 200)};
+  	Obstacle ob_1 = Obstacle(ob_pts1, 8);
+  	Obstacle ob_2 = Obstacle(ob_pts2, 4);
+  	Obstacle ob_3 = Obstacle(ob_pts3, 3);
+  	Obstacle ob_4 = Obstacle(ob_pts4, 3);
+  	ob_1.draw(env_image);
+  	ob_2.draw(env_image);
+  	ob_3.draw(env_image);
+  	ob_4.draw(env_image);
+  	
+  	/*----------------------------------------------
+		PRM Algorithm
+	----------------------------------------------*/
+	
+	//nel caso di un mobile robot
+	struct node 
+	{
+		struct point_t element;
+		int num;
+		struct node **neighbors;
+	};
+	
+	struct point_t *setOfConfig; 
+	setOfConfig = (point_t*)malloc(50 * 50 * sizeof(point_t));
+	
+	for(int i=0; i < 2500; i++)
+	{
+		setOfConfig[i].x = rand() % 400;
+		setOfConfig[i].y = rand() % 400;
+		
+		circle(
+			env_image,
+			cv::Point(setOfConfig[i].x, setOfConfig[i].y),
+			3,
+			cv::Scalar(204,204,204),
+			1
+		);
+	}
+	
+	struct node primo, secondo, terzo, quarto;
+	primo.element = setOfConfig[0];
+	primo.num = 2;
+	secondo.element = setOfConfig[1];
+	secondo.num = 2;
+	terzo.element = setOfConfig[2];
+	terzo.num = 2;
+	quarto.element = setOfConfig[3];
+	quarto.num = 3;
+	
+	primo.neighbors = (struct node **)malloc(primo.num * sizeof(struct node));
+	primo.neighbors[0] = &secondo;
+	primo.neighbors[1] = &terzo;
+	
+	secondo.neighbors = (struct node **)malloc(secondo.num * sizeof(struct node));
+	secondo.neighbors[0] = &primo;
+	secondo.neighbors[1] = &terzo;
+	
+	terzo.neighbors = (struct node **)malloc(terzo.num * sizeof(struct node));
+	terzo.neighbors[0] = &primo;
+	terzo.neighbors[1] = &secondo;
+	
+	std::cout << "[" << primo.element.x << ", " << primo.element.y << "]" << std::endl;
+	std::cout << "[" << secondo.element.x << ", " << secondo.element.y << "]" << std::endl;
+	std::cout << "[" << terzo.element.x << ", " << terzo.element.y << "]" << std::endl;
+	
+	MobileRobot mob1(primo.element), mob2(secondo.element), mob3(terzo.element);
+	
+  	mob1.draw(env_image);
+  	mob2.draw(env_image);
+  	mob3.draw(env_image);
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -136,7 +213,14 @@ int main(int argc, char** argv)
 	
 	// Display the flip image
 	imshow( env_window, flip_env_image );
+	
+	end = clock();
+	
+	std::cout << "Execution time: " << double(end - start) / double(CLOCKS_PER_SEC) << std::endl;
+	
 	waitKey( 0 );
+	
+	free(setOfConfig);
 	
 	/*while(true)
 	{ 	
