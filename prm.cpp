@@ -218,11 +218,30 @@ int main(int argc, char** argv)
   	MobileRobot mob1(primo.element);
   	
   	struct point_t sup;
-  	struct vec2 dir = {0, 0, 5, 5};
+  	struct vec2 dir = {0, 0, 0, 1};
   	sup = mob1.support(dir);
-  	std::cout << "[" << sup.x << ", " << sup.y << "]" << std::endl;
+  	std::cout << "mob1.support = [" << sup.x << ", " << sup.y << "]" << std::endl;
   	
   	mob1.draw(env_image);
+  	
+  	circle(
+  		env_image,
+  		cv::Point(sup.x,sup.y),
+  		3,
+  		cv::Scalar(255,0,0),
+  		1
+  	);
+  	
+  	sup = ob_1.support(dir);
+  	std::cout << "ob1.support = [" << sup.x << ", " << sup.y << "]" << std::endl;
+  	
+  	circle(
+  		env_image,
+  		cv::Point(sup.x,sup.y),
+  		3,
+  		cv::Scalar(255,0,0),
+  		1
+  	);
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
