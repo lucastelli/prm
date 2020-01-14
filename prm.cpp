@@ -32,6 +32,7 @@
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
 cv::Point drawVector(cv::Mat img, cv::Point origin, double width, double angle, cv::Scalar color);
 void drawLabel(cv::Mat img, std::string label, cv::Point origin);
+struct point_t getSupport(struct vec2 direction, MobileRobot mobile, Obstacle obj);
 
 // Define namespace //
 using namespace cv;
@@ -190,58 +191,15 @@ int main(int argc, char** argv)
 			1
 		);
 	}
-	
-	// GJK : Collision Detection Algorithm
-	
-	
-	// test struct node of a graph
-	struct node primo, secondo, terzo;
-	primo.element = setOfConfig[0];
-	primo.num = 2;
-	secondo.element = setOfConfig[1];
-	secondo.num = 2;
-	terzo.element = setOfConfig[2];
-	terzo.num = 2;
-	
-	primo.neighbors = (struct node **)malloc(primo.num * sizeof(struct node));
-	primo.neighbors[0] = &secondo;
-	primo.neighbors[1] = &terzo;
-	
-	secondo.neighbors = (struct node **)malloc(secondo.num * sizeof(struct node));
-	secondo.neighbors[0] = &primo;
-	secondo.neighbors[1] = &terzo;
-	
-	terzo.neighbors = (struct node **)malloc(terzo.num * sizeof(struct node));
-	terzo.neighbors[0] = &primo;
-	terzo.neighbors[1] = &secondo;
   	
-  	MobileRobot mob1(primo.element);
+  	struct point_t centre = ob_1.getCentre();
+  	std::cout << "centre ob1 = [" << centre.x << ", " << centre.y << "]" << std::endl;
   	
-  	struct point_t sup;
-  	struct vec2 dir = {0, 0, 0, 1};
-  	sup = mob1.support(dir);
-  	std::cout << "mob1.support = [" << sup.x << ", " << sup.y << "]" << std::endl;
+  	// GJK : Collision Detection Algorithm
   	
-  	mob1.draw(env_image);
+  	struct point_t *simplex;
+  	simplex = (struct point_t *)malloc(3 * sizeof(*simplex));
   	
-  	circle(
-  		env_image,
-  		cv::Point(sup.x,sup.y),
-  		3,
-  		cv::Scalar(255,0,0),
-  		1
-  	);
-  	
-  	sup = ob_1.support(dir);
-  	std::cout << "ob1.support = [" << sup.x << ", " << sup.y << "]" << std::endl;
-  	
-  	circle(
-  		env_image,
-  		cv::Point(sup.x,sup.y),
-  		3,
-  		cv::Scalar(255,0,0),
-  		1
-  	);
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -341,12 +299,15 @@ void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 	putText(img, label, tmp, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0,0,0), 1, LINE_AA);
 }
 
-/*struct point_t getSupport(struct vec2 direction, MobileRobot mobile, Obstacle obj)
+struct point_t getSupport(struct vec2 direction, MobileRobot mobile, Obstacle obj)
 {
 	struct vec2 inv_direction;
+	struct point_t result;
 	inv_direction.start.x = - direction.start.x;
 	inv_direction.start.y = - direction.start.y;
 	inv_direction.end.x = - direction.end.x;
 	inv_direction.end.y = - direction.end.y;
-	return mobile.support(direction) - obj.support(inv_direction);
-}*/
+	result.x = mobile.support(direction).x - obj.support(inv_direction).x;
+	result.y = mobile.support(direction).y - obj.support(inv_direction).y;
+	return result;
+}
