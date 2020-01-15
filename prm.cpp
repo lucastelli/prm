@@ -200,6 +200,16 @@ int main(int argc, char** argv)
   	struct point_t *simplex;
   	simplex = (struct point_t *)malloc(3 * sizeof(*simplex));
   	
+  	struct point_t a = {50, 50};
+  	struct point_t b;
+  	struct vec2 dir({0,0},{50,50});
+  	struct vec2 inv_dir;
+  	
+  	b = a*(-1);
+  	inv_dir = dir*(-1);
+  	
+  	std::cout << "b = [" << b.x << ", " << b.y << "]" << std::endl;
+  	std::cout << "inv_dir = [(" << inv_dir.start.x << ", " << inv_dir.start.y << ");(" << inv_dir.end.x << ", " << inv_dir.end.y <<")]"<< std::endl;
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
