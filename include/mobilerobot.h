@@ -17,22 +17,22 @@ class MobileRobot
 {
 	public:
 		MobileRobot();
-		MobileRobot(struct point_t pos);
+		MobileRobot(struct vec2_t pos);
 	
 		float * rotateZ(float angle);
 		cv::Point rotate(cv::Point vect);
 		
 		void getRotation();
-		void setPosition(struct point_t pos);
-		struct point_t getPosition();
-		struct point_t support(struct vec2 direction);
+		void setPosition(struct vec2_t pos);
+		struct vec2_t getPosition();
+		struct vec2_t support(struct vec2_t direction);
 		
 		void drawHitBox(cv::Mat image);
 		void drawRobot(cv::Mat image);
 		void draw(cv::Mat image);
 		
 	private:
-		struct point_t position;
+		struct vec2_t position;
 		float rotation[3][3] = {0};
 };
 

@@ -1,6 +1,6 @@
 #include "mobilerobot.h"
 
-MobileRobot::MobileRobot(struct point_t pos) : position(pos)
+MobileRobot::MobileRobot(struct vec2_t pos) : position(pos)
 {
 	rotateZ(0);
 }
@@ -98,24 +98,22 @@ void MobileRobot::getRotation()
 	}
 }
 
-void MobileRobot::setPosition(struct point_t pos)
+void MobileRobot::setPosition(struct vec2_t pos)
 {
 	position = pos;
 }
 
-struct point_t MobileRobot::getPosition()
+struct vec2_t MobileRobot::getPosition()
 {
 	return position;
 }
 
-struct point_t MobileRobot::support(struct vec2 direction)
+struct vec2_t MobileRobot::support(struct vec2_t direction)
 {
-	float a, b, mod;
-	struct point_t result;
-	a = direction.end.x - direction.start.x;
-	b = direction.end.y - direction.start.y;
-	mod = sqrt(pow(a,2)+pow(b,2));
-	result.x = position.x + HITBOX_RADIUS * a / mod;
-	result.y = position.y + HITBOX_RADIUS * b / mod;
+	float mod;
+	struct vec2_t result;
+	mod = sqrt(pow(direction.x,2)+pow(direction.y,2));
+	result.x = position.x + HITBOX_RADIUS * direction.x / mod;
+	result.y = position.y + HITBOX_RADIUS * direction.y / mod;
 	return result;
 }

@@ -32,7 +32,7 @@
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
 cv::Point drawVector(cv::Mat img, cv::Point origin, double width, double angle, cv::Scalar color);
 void drawLabel(cv::Mat img, std::string label, cv::Point origin);
-struct point_t getSupport(struct vec2 direction, MobileRobot mobile, Obstacle obj);
+struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj);
 
 // Define namespace //
 using namespace cv;
@@ -122,13 +122,14 @@ int main(int argc, char** argv)
   	// Display Robot
   	//manipulator.computePose();
   	//manipulator.draw(env_image);
-  	//struct point_t pos = {20, 20};
-  	//MobileRobot mobile(pos);
-  	//mobile.getRotation();
-  	//mobile.draw(env_image);
+  	
+  	struct vec2_t pos = {20, 20};
+  	MobileRobot mobile(pos);
+  	mobile.getRotation();
+  	mobile.draw(env_image);
   	
   	// Display obstacles
-  	struct point_t ob_pts1[] = {	
+  	struct vec2_t ob_pts1[] = {	
   											{50,50}, 
   											{50, 100},
   											{85, 135},
@@ -139,20 +140,20 @@ int main(int argc, char** argv)
   											{85, 15}
   										};
   										
-  	struct point_t ob_pts2[] = {
+  	struct vec2_t ob_pts2[] = {
   											{0, 400},
   											{200, 200},
   											{250,250},
   											{50,400}
   										};
   										
-  	struct point_t ob_pts3[] = {
+  	struct vec2_t ob_pts3[] = {
   											{250, 0},
   											{400, 0},
   											{400, 400}
   										};
   										
-  	struct point_t ob_pts4[] = {
+  	struct vec2_t ob_pts4[] = {
   											{80, 250},
   											{150, 200},
   											{0, 200}
@@ -175,8 +176,8 @@ int main(int argc, char** argv)
 	
 	
 	// Sampling Strategy : Uniform Distribution
-	struct point_t *setOfConfig; 
-	setOfConfig = (point_t*)malloc(50 * 50 * sizeof(point_t));
+	struct vec2_t *setOfConfig; 
+	setOfConfig = (vec2_t*)malloc(50 * 50 * sizeof(*setOfConfig));
 	
 	for(int i=0; i < 2500; i++)
 	{
@@ -192,24 +193,20 @@ int main(int argc, char** argv)
 		);
 	}
   	
-  	struct point_t centre = ob_1.getCentre();
+  	struct vec2_t centre = ob_1.getCentre();
   	std::cout << "centre ob1 = [" << centre.x << ", " << centre.y << "]" << std::endl;
   	
-  	// GJK : Collision Detection Algorithm
+  	// GJK : Collision Detection Algorithm (for one configuration and one obstacle(ob_1))
   	
-  	struct point_t *simplex;
-  	simplex = (struct point_t *)malloc(3 * sizeof(*simplex));
+  	struct vec2_t *vertices_simplex;
+  	vertices_simplex = (struct vec2_t *)malloc(3 * sizeof(*vertices_simplex));
+  	struct vec2_t dir;
+  	dir = mobile.getPosition() - ob_1.getCentre();
+  	vertices_simplex[0] = getSupport(dir, mobile, ob_1);
+  	vertices_simplex[1] = getSupport(dir*(-1), mobile, ob_1);
+  	//vertices_simplex[2] =
   	
-  	struct point_t a = {50, 50};
-  	struct point_t b;
-  	struct vec2 dir({0,0},{50,50});
-  	struct vec2 inv_dir;
   	
-  	b = a*(-1);
-  	inv_dir = dir*(-1);
-  	
-  	std::cout << "b = [" << b.x << ", " << b.y << "]" << std::endl;
-  	std::cout << "inv_dir = [(" << inv_dir.start.x << ", " << inv_dir.start.y << ");(" << inv_dir.end.x << ", " << inv_dir.end.y <<")]"<< std::endl;
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -309,7 +306,7 @@ void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 	putText(img, label, tmp, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0,0,0), 1, LINE_AA);
 }
 
-struct point_t getSupport(struct vec2 direction, MobileRobot mobile, Obstacle obj)
+struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj)
 {
 	return mobile.support(direction) - obj.support(direction*(-1));;
 }

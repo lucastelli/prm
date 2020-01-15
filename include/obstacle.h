@@ -11,18 +11,18 @@ class Obstacle
 {
 	public:
 		Obstacle();
-		Obstacle(struct point_t *pts, int num);
+		Obstacle(struct vec2_t *pts, int num);
 		
 		void draw(cv::Mat image);
-		struct point_t getCentre();
-		struct point_t support(struct vec2 direction);
+		struct vec2_t getCentre();
+		struct vec2_t support(struct vec2_t direction);
 		
 	private:
 		int num_vertices;
-		struct point_t *vertices;
-		struct point_t centre;
+		struct vec2_t *vertices;
+		struct vec2_t centre;
 		
-		float dotProduct(struct point_t v, struct vec2 dir);
+		float dotProduct(struct vec2_t v, struct vec2_t dir);
 };
 
 #endif

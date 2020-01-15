@@ -1,8 +1,8 @@
 #include "obstacle.h"
 
-Obstacle::Obstacle(struct point_t *pts, int num)
+Obstacle::Obstacle(struct vec2_t *pts, int num)
 {
-	vertices = (struct point_t *)malloc(num * sizeof(struct point_t));
+	vertices = (struct vec2_t *)malloc(num * sizeof(struct vec2_t));
 	for(int i = 0; i < num; i++)
 	{
 		vertices[i] = pts[i];
@@ -41,15 +41,15 @@ void Obstacle::draw(cv::Mat image)
 	free(picture);
 }
 
-struct point_t Obstacle::getCentre()
+struct vec2_t Obstacle::getCentre()
 {
 	return centre;
 }
 
-struct point_t Obstacle::support(struct vec2 direction)
+struct vec2_t Obstacle::support(struct vec2_t direction)
 {
 	float furthestDistance = - INFINITY;
-	struct point_t *furthestVertex = NULL;
+	struct vec2_t *furthestVertex = NULL;
 	
 	for(int i=0; i < num_vertices; i++)
 	{
@@ -64,8 +64,7 @@ struct point_t Obstacle::support(struct vec2 direction)
 	return *furthestVertex;
 }
 
-float Obstacle::dotProduct(struct point_t v, struct vec2 dir)
+float Obstacle::dotProduct(struct vec2_t v, struct vec2_t dir)
 {
-	struct point_t tmp = {dir.end.x - dir.start.x, dir.end.y - dir.start.y};
-	return (v.x * tmp.x + v.y * tmp.y);
+	return (v.x * dir.x + v.y * dir.y);
 }
