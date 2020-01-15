@@ -23,6 +23,12 @@ struct point_t
 		return point_t(a.x+x, a.y+y);
 	}
 	
+	//subtract operator
+	point_t operator-(const point_t& a) const
+	{
+		return point_t(a.x-x, a.y-y);
+	}
+	
 	//multiply by a float number
 	point_t operator*(const float value) const
 	{

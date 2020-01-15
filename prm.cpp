@@ -311,13 +311,5 @@ void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 
 struct point_t getSupport(struct vec2 direction, MobileRobot mobile, Obstacle obj)
 {
-	struct vec2 inv_direction;
-	struct point_t result;
-	inv_direction.start.x = - direction.start.x;
-	inv_direction.start.y = - direction.start.y;
-	inv_direction.end.x = - direction.end.x;
-	inv_direction.end.y = - direction.end.y;
-	result.x = mobile.support(direction).x - obj.support(inv_direction).x;
-	result.y = mobile.support(direction).y - obj.support(inv_direction).y;
-	return result;
+	return mobile.support(direction) - obj.support(direction*(-1));;
 }
