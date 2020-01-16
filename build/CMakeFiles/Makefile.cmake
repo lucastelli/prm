@@ -54,5 +54,6 @@ set(CMAKE_MAKEFILE_PRODUCTS
 # Dependency information for all targets:
 set(CMAKE_DEPEND_INFO_FILES
   "CMakeFiles/prm.dir/DependInfo.cmake"
+  "CMakeFiles/gjk.dir/DependInfo.cmake"
   "class/CMakeFiles/class.dir/DependInfo.cmake"
   )

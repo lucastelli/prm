@@ -13,7 +13,8 @@ class Obstacle
 		Obstacle();
 		Obstacle(struct vec2_t *pts, int num);
 		
-		void draw(cv::Mat image);
+		void draw(cv::Mat image, cv::Scalar color, struct vec2_t offset);
+		void drawBoundaries(cv::Mat image, cv::Scalar color, int thick, struct vec2_t offset);
 		struct vec2_t getCentre();
 		struct vec2_t support(struct vec2_t direction);
 		

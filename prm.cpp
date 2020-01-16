@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 	Rotoidal j3_r(l3, 0, 0, angle_2);
 	EndEffector end;*/
 	
-	float l1 = 150;
+	/*float l1 = 150;
 	float l2 = 150;
 	float l3 = 150;
 	
@@ -100,7 +100,7 @@ int main(int argc, char** argv)
   	
   	float *vet[] = {j1_r.getPointerTeta(), j1_r.getPointerArm(), j2_l.getPointerDistance()};
   	manipulator.setConfiguration(vet, 3);
-  	//manipulator.getConfiguration();
+  	//manipulator.getConfiguration();*/
   	
 	/*----------------------------------------------
 		Display the environment: reference frame, robot, obstacles, 
@@ -116,21 +116,21 @@ int main(int argc, char** argv)
   	cv::Mat map_y(env_image.size(), CV_32FC1);
   	
   	// Define and display reference frame	
-  	cv::Point xAxis, yAxis;
+  	//cv::Point xAxis, yAxis;
   	
-  	xAxis = drawVector(env_image, origin, AXIS_LENGTH, 0, Scalar(255, 0, 0));
-  	yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
+  	//xAxis = drawVector(env_image, origin, AXIS_LENGTH, 0, Scalar(255, 0, 0));
+  	//yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
   	// Display Robot
   	//manipulator.computePose();
   	//manipulator.draw(env_image);
   	
-  	MobileRobot mobile({45, 45});
+  	//MobileRobot mobile({45, 45});
   	//mobile.getRotation();
-  	mobile.draw(env_image);
+  	//mobile.draw(env_image);
   	
   	// Display obstacles
-  	struct vec2_t ob_pts1[] = {	
+  	/*struct vec2_t ob_pts1[] = {	
   											{50,50}, 
   											{50, 100},
   											{85, 135},
@@ -140,7 +140,7 @@ int main(int argc, char** argv)
   											{135, 15},
   											{85, 15}
   										};
-  										
+  										*/
   	struct vec2_t ob_pts2[] = {
   											{0, 400},
   											{200, 200},
@@ -160,14 +160,14 @@ int main(int argc, char** argv)
   											{0, 200}
   										};
   	
-  	Obstacle ob_1 = Obstacle(ob_pts1, 8);
+  	//Obstacle ob_1 = Obstacle(ob_pts1, 8);
   	Obstacle ob_2 = Obstacle(ob_pts2, 4);
   	Obstacle ob_3 = Obstacle(ob_pts3, 3);
   	Obstacle ob_4 = Obstacle(ob_pts4, 3);
-  	ob_1.draw(env_image);
-  	ob_2.draw(env_image);
-  	ob_3.draw(env_image);
-  	ob_4.draw(env_image);
+  	//ob_1.draw(env_image);
+  	ob_2.draw(env_image, cv::Scalar(0,0,0), vec2_t(0,0));
+  	ob_3.draw(env_image, cv::Scalar(0,0,0), vec2_t(0,0));
+  	ob_4.draw(env_image, cv::Scalar(0,0,0), vec2_t(0,0));
   	
   	/*----------------------------------------------
 		PRM Algorithm
@@ -177,7 +177,7 @@ int main(int argc, char** argv)
 	
 	
 	// Sampling Strategy : Uniform Distribution
-	struct vec2_t *setOfConfig; 
+	/*struct vec2_t *setOfConfig; 
 	setOfConfig = (vec2_t*)malloc(50 * 50 * sizeof(*setOfConfig));
 	
 	for(int i=0; i < 2500; i++)
@@ -196,11 +196,11 @@ int main(int argc, char** argv)
   	
   	struct vec2_t centre = ob_1.getCentre();
   	std::cout << "centre mob = [" << mobile.getPosition().x << ", " << mobile.getPosition().y << "]" << std::endl;
-  	std::cout << "centre ob1 = [" << centre.x << ", " << centre.y << "]" << std::endl;
+  	std::cout << "centre ob1 = [" << centre.x << ", " << centre.y << "]" << std::endl;*/
   	
   	// GJK : Collision Detection Algorithm (for one configuration and one obstacle(ob_1))
   	
-  	struct vec2_t *vertices_simplex;
+  	/*struct vec2_t *vertices_simplex;
   	vertices_simplex = (struct vec2_t *)malloc(3 * sizeof(*vertices_simplex));
   	struct vec2_t dir, a;
   	struct vec3_t tmp;
@@ -273,8 +273,8 @@ int main(int argc, char** argv)
 	  	}
 	  	std::cout << "cicle = " << i << std::endl;
 	  	std::cout << "a0 = [" << a0.x << ", " << a0.y << "]" << std::endl;
-	  	std::cout << "ab = [" << a0.x << ", " << a0.y << "]" << std::endl;
-	  	std::cout << "ac = [" << a0.x << ", " << a0.y << "]" << std::endl;
+	  	std::cout << "ab = [" << ab.x << ", " << ab.y << "]" << std::endl;
+	  	std::cout << "ac = [" << ac.x << ", " << ac.y << "]" << std::endl;
 	  	std::cout << "abPerp = [" << abPerp.x << ", " << abPerp.y << ", " << abPerp.z << "]" << std::endl;
 	  	std::cout << "acPerp = [" << acPerp.x << ", " << acPerp.y << ", " << acPerp.z << "]" << std::endl;
 	  	std::cout << "abOrth = [" << abOrth.x << ", " << abOrth.y << "]" << std::endl;
@@ -284,7 +284,7 @@ int main(int argc, char** argv)
 	  	std::cout << "collision = " << collision << std::endl << std::endl;
 	  	std::cout << "dotProduct(check, dir) = " << dotProduct(check, dir) << std::endl << std::endl;
 	  	
-	}while(i<5);
+	}while(dotProduct(check, dir) >= 0);*/
 	
 	//std::cout << "collision = " << collision << std::endl;
   	
@@ -304,7 +304,7 @@ int main(int argc, char** argv)
   		);
   	}*/
   	
-	// Flip vertical entire image
+	/*// Flip vertical entire image
 	updateMap(map_x, map_y);
 	remap( env_image, flip_env_image, map_x, map_y, INTER_LINEAR, BORDER_CONSTANT, Scalar(0, 0, 0) );
 	
@@ -321,7 +321,7 @@ int main(int argc, char** argv)
 	
 	waitKey( 0 );
 	
-	free(setOfConfig);
+	//free(setOfConfig);*/
 	
 	/*while(true)
 	{ 	

@@ -23,11 +23,13 @@ add_subdirectory(class)
 # add the executable
 set(SOURCE_FILES prm.cpp)
 add_executable( ${PROJECT_NAME} ${SOURCE_FILES} )
+add_executable( gjk gjk.cpp )
 
-target_include_directories(prm PUBLIC
-                           "${PROJECT_BINARY_DIR}"
-                           )
+target_include_directories(prm PUBLIC "${PROJECT_BINARY_DIR}")
                            
 target_link_libraries( ${PROJECT_NAME} class)
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
+
+target_link_libraries( gjk class)
+target_link_libraries( gjk ${OpenCV_LIBS} )
 

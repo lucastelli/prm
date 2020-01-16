@@ -20,15 +20,14 @@ Obstacle::Obstacle(struct vec2_t *pts, int num)
 	centre.y = sum_y/num;
 }
 
-void Obstacle::draw(cv::Mat image)
+void Obstacle::draw(cv::Mat image, cv::Scalar color, struct vec2_t offset)
 {
-	cv::Scalar color = cv::Scalar(0,0,0);
 	cv::Point *picture;
 	picture = (cv::Point *)malloc(num_vertices * sizeof(cv::Point));
 	for(int i=0; i<num_vertices; i++)
 	{
-		picture[i].x = vertices[i].x;
-		picture[i].y = vertices[i].y;
+		picture[i].x = vertices[i].x + offset.x;
+		picture[i].y = vertices[i].y + offset.y;
 	}
 	
 	fillConvexPoly(
@@ -39,6 +38,28 @@ void Obstacle::draw(cv::Mat image)
 	);
 	
 	free(picture);
+}
+
+void Obstacle::drawBoundaries(cv::Mat image, cv::Scalar color, int thick, struct vec2_t offset)
+{
+	for(int i=0; i<num_vertices-1; i++)
+	{
+		line(
+			image,
+			cv::Point((vertices[i] + offset).x, (vertices[i] + offset).y),
+			cv::Point((vertices[i+1] + offset).x, (vertices[i+1] + offset).y),
+			color,
+			thick
+		);
+	}
+	
+	line(
+			image,
+			cv::Point((vertices[num_vertices-1] + offset).x, (vertices[num_vertices-1] + offset).y),
+			cv::Point((vertices[0] + offset).x, (vertices[0] + offset).y),
+			color,
+			thick
+		);
 }
 
 struct vec2_t Obstacle::getCentre()

@@ -124,6 +124,19 @@ prm/fast:
 .PHONY : prm/fast
 
 #=============================================================================
+# Target rules for targets named gjk
+
+# Build rule for target.
+gjk: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gjk
+.PHONY : gjk
+
+# fast build rule for target.
+gjk/fast:
+	$(MAKE) -f CMakeFiles/gjk.dir/build.make CMakeFiles/gjk.dir/build
+.PHONY : gjk/fast
+
+#=============================================================================
 # Target rules for targets named class
 
 # Build rule for target.
@@ -135,6 +148,33 @@ class: cmake_check_build_system
 class/fast:
 	$(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/build
 .PHONY : class/fast
+
+gjk.o: gjk.cpp.o
+
+.PHONY : gjk.o
+
+# target to build an object file
+gjk.cpp.o:
+	$(MAKE) -f CMakeFiles/gjk.dir/build.make CMakeFiles/gjk.dir/gjk.cpp.o
+.PHONY : gjk.cpp.o
+
+gjk.i: gjk.cpp.i
+
+.PHONY : gjk.i
+
+# target to preprocess a source file
+gjk.cpp.i:
+	$(MAKE) -f CMakeFiles/gjk.dir/build.make CMakeFiles/gjk.dir/gjk.cpp.i
+.PHONY : gjk.cpp.i
+
+gjk.s: gjk.cpp.s
+
+.PHONY : gjk.s
+
+# target to generate assembly for a file
+gjk.cpp.s:
+	$(MAKE) -f CMakeFiles/gjk.dir/build.make CMakeFiles/gjk.dir/gjk.cpp.s
+.PHONY : gjk.cpp.s
 
 prm.o: prm.cpp.o
 
@@ -170,9 +210,13 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... rebuild_cache"
-	@echo "... prm"
 	@echo "... edit_cache"
+	@echo "... prm"
+	@echo "... gjk"
 	@echo "... class"
+	@echo "... gjk.o"
+	@echo "... gjk.i"
+	@echo "... gjk.s"
 	@echo "... prm.o"
 	@echo "... prm.i"
 	@echo "... prm.s"
