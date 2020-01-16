@@ -33,6 +33,8 @@ void updateMap(cv::Mat &map_x, cv::Mat &map_y);
 cv::Point drawVector(cv::Mat img, cv::Point origin, double width, double angle, cv::Scalar color);
 void drawLabel(cv::Mat img, std::string label, cv::Point origin);
 struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj);
+struct vec3_t vectorProduct(struct vec3_t a, struct vec3_t b);
+float dotProduct(struct vec2_t v, struct vec2_t dir);
 
 // Define namespace //
 using namespace cv;
@@ -98,7 +100,7 @@ int main(int argc, char** argv)
   	
   	float *vet[] = {j1_r.getPointerTeta(), j1_r.getPointerArm(), j2_l.getPointerDistance()};
   	manipulator.setConfiguration(vet, 3);
-  	manipulator.getConfiguration();
+  	//manipulator.getConfiguration();
   	
 	/*----------------------------------------------
 		Display the environment: reference frame, robot, obstacles, 
@@ -123,9 +125,8 @@ int main(int argc, char** argv)
   	//manipulator.computePose();
   	//manipulator.draw(env_image);
   	
-  	struct vec2_t pos = {20, 20};
-  	MobileRobot mobile(pos);
-  	mobile.getRotation();
+  	MobileRobot mobile({45, 45});
+  	//mobile.getRotation();
   	mobile.draw(env_image);
   	
   	// Display obstacles
@@ -194,19 +195,114 @@ int main(int argc, char** argv)
 	}
   	
   	struct vec2_t centre = ob_1.getCentre();
+  	std::cout << "centre mob = [" << mobile.getPosition().x << ", " << mobile.getPosition().y << "]" << std::endl;
   	std::cout << "centre ob1 = [" << centre.x << ", " << centre.y << "]" << std::endl;
   	
   	// GJK : Collision Detection Algorithm (for one configuration and one obstacle(ob_1))
   	
   	struct vec2_t *vertices_simplex;
   	vertices_simplex = (struct vec2_t *)malloc(3 * sizeof(*vertices_simplex));
-  	struct vec2_t dir;
+  	struct vec2_t dir, a;
+  	struct vec3_t tmp;
+  	bool collision;
+  	
+  	struct vec2_t a0, ab, ac;
+  	struct vec3_t abPerp, acPerp;
+  	struct vec2_t abOrth, acOrth, check;
+  	
   	dir = mobile.getPosition() - ob_1.getCentre();
-  	vertices_simplex[0] = getSupport(dir, mobile, ob_1);
+  	// get first simplex vertex
+  	vertices_simplex[0] = getSupport(dir, mobile, ob_1);	
+  	// get second simplex vertex
   	vertices_simplex[1] = getSupport(dir*(-1), mobile, ob_1);
-  	//vertices_simplex[2] =
+  	// get third simplex vertex
+  	a = vertices_simplex[0] - vertices_simplex[1];
+  	tmp = vectorProduct(vec3_t(a.x, a.y, 0), vec3_t(-vertices_simplex[0].x, -vertices_simplex[0].y, 0));
+  	//std::cout << "tmp = [" << tmp.x << ", " << tmp.y << ", " << tmp.z << "]" << std::endl;
+  	tmp = vectorProduct(tmp, vec3_t(a.x, a.y, 0));
+  	//std::cout << "tmp = [" << tmp.x << ", " << tmp.y << ", " << tmp.z << "]" << std::endl;
+  	vertices_simplex[2] = getSupport(vec2_t(tmp.x, tmp.y), mobile, ob_1);
+  	// check if the origin is outside of the simplex
   	
+  	collision = false;
+  	int i = 0;
   	
+  	std::cout << "dir = [" << dir.x << ", " << dir.y << "]" << std::endl;
+  	std::cout << "v0 = [" << vertices_simplex[0].x << ", " << vertices_simplex[0].y << "]" << std::endl;
+	std::cout << "v1 = [" << vertices_simplex[1].x << ", " << vertices_simplex[1].y << "]" << std::endl;
+	std::cout << "v2 = [" << vertices_simplex[2].x << ", " << vertices_simplex[2].y << "]" << std::endl;
+  	
+  	do
+  	{
+  		i++;
+	  	a0 = vertices_simplex[2]*(-1);						//v2 to the origin
+	  	ab = vertices_simplex[1] - vertices_simplex[2];	//v2 to v1
+	  	ac = vertices_simplex[0] - vertices_simplex[2]; //v2 to v0
+	  	
+	  	std::cout << "a0 = [" << a0.x << ", " << a0.y << "]" << std::endl;
+		std::cout << "ab = [" << ab.x << ", " << ab.y << "]" << std::endl;
+		std::cout << "ac = [" << ac.x << ", " << ac.y << "]" << std::endl;
+	  	
+	  	abPerp = vectorProduct(vec3_t(ac.x, ac.y, 0), vec3_t(ab.x, ab.y, 0));
+	  	abPerp = vectorProduct(abPerp, vec3_t(ab.x, ab.y, 0));
+	  	acPerp = vectorProduct(vec3_t(ab.x, ab.y, 0), vec3_t(ac.x, ac.y, 0));
+	  	acPerp = vectorProduct(acPerp, vec3_t(ac.x, ac.y, 0));
+	  	abOrth = vec2_t(abPerp.x, abPerp.y);
+	  	acOrth = vec2_t(acPerp.x, acPerp.y);
+	  	
+	  	if(dotProduct(a0, abOrth) > 0)
+	  	{
+	  		// the origin is outside line ab
+	  		// evolve the simplex
+	  		dir = abOrth;
+	  		vertices_simplex[2] = getSupport(dir, mobile, ob_1);
+	  		check = vertices_simplex[2];
+	  	}
+	  	else if(dotProduct(a0, acOrth) > 0)
+	  	{
+	  		// the origin is outside line ac
+	  		// evolve the simplex
+	  		dir = acOrth;
+	  		vertices_simplex[1] = getSupport(dir, mobile, ob_1);
+	  		check = vertices_simplex[1];
+	  	}
+	  	else
+	  	{
+	  		// the origin is inside
+	  		collision = true;
+	  	}
+	  	std::cout << "cicle = " << i << std::endl;
+	  	std::cout << "a0 = [" << a0.x << ", " << a0.y << "]" << std::endl;
+	  	std::cout << "ab = [" << a0.x << ", " << a0.y << "]" << std::endl;
+	  	std::cout << "ac = [" << a0.x << ", " << a0.y << "]" << std::endl;
+	  	std::cout << "abPerp = [" << abPerp.x << ", " << abPerp.y << ", " << abPerp.z << "]" << std::endl;
+	  	std::cout << "acPerp = [" << acPerp.x << ", " << acPerp.y << ", " << acPerp.z << "]" << std::endl;
+	  	std::cout << "abOrth = [" << abOrth.x << ", " << abOrth.y << "]" << std::endl;
+	  	std::cout << "acOrth = [" << acOrth.x << ", " << acOrth.y << "]" << std::endl;
+	  	std::cout << "dir = [" << dir.x << ", " << dir.y << "]" << std::endl;
+	  	std::cout << "check = [" << check.x << ", " << check.y << "]" << std::endl;
+	  	std::cout << "collision = " << collision << std::endl << std::endl;
+	  	std::cout << "dotProduct(check, dir) = " << dotProduct(check, dir) << std::endl << std::endl;
+	  	
+	}while(i<5);
+	
+	//std::cout << "collision = " << collision << std::endl;
+  	
+  	/*std::cout << "dir = [" << dir.x << ", " << dir.y << "]" << std::endl;
+  	std::cout << "sup1 = [" << vertices_simplex[0].x << ", " << vertices_simplex[0].y << "]" << std::endl;
+  	std::cout << "sup2 = [" << vertices_simplex[1].x << ", " << vertices_simplex[1].y << "]" << std::endl;
+  	std::cout << "sup3 = [" << vertices_simplex[2].x << ", " << vertices_simplex[2].y << "]" << std::endl;*/
+  	
+  	/*for(int i=0; i<3; i++)
+  	{
+  		circle(
+  			env_image,
+  			cv::Point(vertices_simplex[i].x, vertices_simplex[i].y),
+  			10,
+  			cv::Scalar(255,0,0),
+  			2
+  		);
+  	}*/
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -309,4 +405,18 @@ void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj)
 {
 	return mobile.support(direction) - obj.support(direction*(-1));;
+}
+
+struct vec3_t vectorProduct(struct vec3_t a, struct vec3_t b)
+{
+	struct vec3_t result;
+	result.x = a.y * b.z - a.z * b.y;
+	result.y = a.x * b.z - a.z * b.x;
+	result.z = a.x * b.y - a.y * b.x;
+	return result;
+}
+
+float dotProduct(struct vec2_t v, struct vec2_t dir)
+{
+	return (v.x * dir.x + v.y * dir.y);
 }
