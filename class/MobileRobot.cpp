@@ -23,10 +23,11 @@ float * MobileRobot::rotateZ(float angle)
 	return (float*)rotation;
 }
 		
-void MobileRobot::drawHitBox(cv::Mat image)
+void MobileRobot::drawHitBox(cv::Mat image, struct vec2_t reference)
 {
 	cv::Scalar color = cv::Scalar(0, 0, 255); //red
-	cv::Point pos = cv::Point(position.x, position.y);
+	struct vec2_t hc = position + reference;
+	cv::Point pos = cv::Point(hc.x, hc.y);
 	
 	circle(
 		image,
@@ -47,10 +48,11 @@ void MobileRobot::drawHitBox(cv::Mat image)
 	);
 }
 
-void MobileRobot::drawRobot(cv::Mat image)
+void MobileRobot::drawRobot(cv::Mat image, struct vec2_t reference)
 {
 	cv::Scalar color = cv::Scalar(10, 240, 0); //green
-	cv::Point pos = cv::Point(position.x, position.y);
+	struct vec2_t rc = position + reference;
+	cv::Point pos = cv::Point(rc.x, rc.y);
 	
 	cv::Point pt_a = cv::Point(0, ROBOT_SIZE);
 	cv::Point pt_b = cv::Point(ROBOT_SIZE * cos(M_PI/4), - ROBOT_SIZE * 0.5);
@@ -80,10 +82,10 @@ cv::Point MobileRobot::rotate(cv::Point vect)
 	return result;
 }
 
-void MobileRobot::draw(cv::Mat image)
+void MobileRobot::draw(cv::Mat image, struct vec2_t reference)
 {
-	drawRobot(image);
-	drawHitBox(image);
+	drawRobot(image, reference);
+	drawHitBox(image, reference);
 }
 
 void MobileRobot::getRotation()

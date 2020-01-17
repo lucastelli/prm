@@ -27,9 +27,9 @@ class MobileRobot
 		struct vec2_t getPosition();
 		struct vec2_t support(struct vec2_t direction);
 		
-		void drawHitBox(cv::Mat image);
-		void drawRobot(cv::Mat image);
-		void draw(cv::Mat image);
+		void drawHitBox(cv::Mat image, struct vec2_t reference);
+		void drawRobot(cv::Mat image, struct vec2_t reference);
+		void draw(cv::Mat image, struct vec2_t reference);
 		
 	private:
 		struct vec2_t position;
