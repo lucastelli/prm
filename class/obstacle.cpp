@@ -20,6 +20,14 @@ Obstacle::Obstacle(struct vec2_t *pts, int num)
 	centre.y = sum_y/num;
 }
 
+void Obstacle::move(struct vec2_t displacement)
+{
+	for(int i=0; i < num_vertices; i++)
+	{
+		vertices[i] = vertices[i] + displacement;
+	}
+}
+
 void Obstacle::draw(cv::Mat image, cv::Scalar color, struct vec2_t offset)
 {
 	cv::Point *picture;

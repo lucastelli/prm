@@ -27,6 +27,7 @@ using namespace cv;
 cv::Point drawVector(cv::Mat img, struct vec2_t origin, double width, double angle, cv::Scalar color);
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
 void drawLabel(cv::Mat img, std::string label, cv::Point origin);
+//function gjk v1.0
 struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj);
 struct vec2_t getSupport(struct vec2_t direction, Obstacle ob1, Obstacle ob2);
 bool search(struct vec2_t *vett, struct vec2_t pt, int num);
@@ -34,6 +35,16 @@ struct vec3_t vectorProduct(struct vec3_t a, struct vec3_t b);
 struct vec2_t normalize(struct vec2_t vett);
 struct vec3_t normalize(struct vec3_t vett);
 float dotProduct(struct vec2_t v, struct vec2_t dir);
+//function gjk v2.0
+
+enum gjkState{
+  		UPDATE_SIMPLEX,
+  		NO_COLLISION,
+  		COLLISION_FOUND
+  	};
+  	
+enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, Obstacle r, Obstacle ob);
+enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, Obstacle r, Obstacle ob);
 
 int main()
 {
@@ -67,9 +78,11 @@ int main()
   											{20, 20},
   											{20, 0}
   										};
-  	
   	Obstacle ob = Obstacle(ob_pts1, 8);
   	Obstacle r = Obstacle(robot, 4);
+  	
+  	r.move(vec2_t(0, 0));
+  	
   	ob.draw(mink_image, cv::Scalar(0,0,0), origin);
   	r.draw(mink_image, cv::Scalar(255,0,0), origin);
   	
@@ -162,11 +175,13 @@ int main()
   	mink_shape.drawBoundaries(mink_image, cv::Scalar(0,0,0), 2, origin);
   	#endif
   	
-  	// GJK
-  	#if 1
   	//------------------------------
+  	//	GJK version 1.0 found collision if obstacle colliding
+  	//------------------------------
+  	
+  	#if 0
+  	
   	//	GJK [create first simplex]
-  	//------------------------------
   	
   	std::cout << std::endl << "GJK [create first simplex]" << std::endl;
   	
@@ -214,16 +229,17 @@ int main()
   	);
   	#endif
   	
-  	#if 1
-  	//------------------------------
+  	#if 0
+  	
   	//	GJK [check if the origin is inside the simplex]
-  	//------------------------------
   	
   	std::cout << std::endl << "GJK [check if the origin is inside the simplex]" << std::endl;
   	
   	struct vec2_t v2_o, v2_v1, v2_v0;
   	struct vec3_t v2_v1_orth, v2_v0_orth;
+  	bool collision = false;
   	
+do{
 	v2_o = simplex_vertices[2]*(-1);							//v2 to the origin
 	v2_v1 = simplex_vertices[1] - simplex_vertices[2];	//v2 to v1
 	v2_v0 = simplex_vertices[0] - simplex_vertices[2]; //v2 to v0
@@ -284,14 +300,41 @@ int main()
 	else
 	{
 		std::cout << "Collision!" << std::endl;
+		collision = true;
 	}
 		
 	std::cout << "dir = [" << dir.x << ", " << dir.y << "]" << std::endl;
 	std::cout << "v2_o = [" << v2_o.x << ", " << v2_o.y << "]" << std::endl;
 	std::cout << "dotProduct(dir, v2_o) = " << dotProduct(dir, v2_o) << std::endl;
 	std::cout << std::endl;
-	
+}while(collision == false);
   	#endif
+  	
+  	//------------------------------
+  	//	GJK version 2.0
+  	//------------------------------
+  	
+  	std::vector<struct vec2_t> simplex_vertices;
+  	struct vec2_t direction = {0, 0};
+  	
+  	enum gjkState result = UPDATE_SIMPLEX;
+  	int cicle = 0;
+  	
+  	while(result == UPDATE_SIMPLEX)
+  	{
+  		result = updateSimplex(direction, &simplex_vertices, r, ob);
+  		cicle++;
+  		std::cout << "result " << result << std::endl << std::endl;
+  	}
+  	
+  	if(result == COLLISION_FOUND)
+  	{
+  		std::cout << "Collision!" << std::endl;
+  	} 
+  	else 
+  	{
+  		std::cout << "NO Collision!" << std::endl;
+  	}
   	
   	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -404,3 +447,110 @@ cv::Point drawVector(cv::Mat img, struct vec2_t origin, double width, double ang
     
     return vectorAxis;
 }
+
+//----------------------------------
+
+enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, Obstacle r, Obstacle ob)
+{
+	struct vec2_t a, v2_o, v2_v1, v2_v0, v2_v1_orth_2d, v2_v0_orth_2d;
+	struct vec3_t tmp, v2_v1_orth, v2_v0_orth;
+	float dot1, dot2;
+	
+	
+	std::cout << "simplex_vertices.size() = " << simplex_vertices[0].size() << std::endl;
+	switch(simplex_vertices[0].size())
+	{
+		case 0:	direction = r.getCentre() - ob.getCentre();
+					std::cout << "case 0" << std::endl;
+					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
+					break;
+					
+		case 1:	direction = direction*(-1);
+					std::cout << "case 1" << std::endl;
+					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
+					break;
+					
+		case 2:	a = simplex_vertices[0].at(0) - simplex_vertices[0].at(1);
+  					tmp = vectorProduct(vec3_t(a.x, a.y, 0), vec3_t(-simplex_vertices[0].at(0).x, -simplex_vertices[0].at(0).y, 0));
+  					tmp = vectorProduct(tmp, vec3_t(a.x, a.y, 0));
+  					tmp = normalize(tmp);
+  					direction.x = tmp.x;
+  					direction.y = tmp.y;
+  					std::cout << "case 2" << std::endl;
+					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
+  					break;
+  		
+  		case 3:	v2_o = simplex_vertices[0].at(2)*(-1);								//v2 to the origin
+					v2_v1 = simplex_vertices[0].at(1) - simplex_vertices[0].at(2);	//v2 to v1
+					v2_v0 = simplex_vertices[0].at(0) - simplex_vertices[0].at(2); //v2 to v0
+					
+					v2_v1_orth = vectorProduct(vec3_t(v2_v0.x, v2_v0.y, 0), vec3_t(v2_v1.x, v2_v1.y, 0));
+					v2_v1_orth = normalize(v2_v1_orth);
+					v2_v1_orth = vectorProduct(v2_v1_orth, vec3_t(v2_v1.x, v2_v1.y, 0));
+					v2_v1_orth = normalize(v2_v1_orth);
+					
+					v2_v0_orth = vectorProduct(vec3_t(v2_v1.x, v2_v1.y, 0), vec3_t(v2_v0.x, v2_v0.y, 0));
+					v2_v0_orth = normalize(v2_v0_orth);
+					v2_v0_orth = vectorProduct(v2_v0_orth, vec3_t(v2_v0.x, v2_v0.y, 0));
+					v2_v0_orth = normalize(v2_v0_orth);
+					
+					v2_o = normalize(v2_o);
+					v2_v1_orth_2d = vec2_t(v2_v1_orth.x, v2_v1_orth.y);
+					v2_v0_orth_2d = vec2_t(v2_v0_orth.x, v2_v0_orth.y);
+					dot1 = dotProduct(v2_o, v2_v1_orth_2d);
+					dot2 = dotProduct(v2_o, v2_v0_orth_2d);
+					if(dot1 > 0)
+					{
+						// remove v0 -> reallocation (v1 become v0 & v2 become v1)
+						simplex_vertices[0].erase(simplex_vertices[0].begin());
+						direction = v2_v1_orth_2d;
+					}
+					else if(dot2 > 0)
+					{
+						// remove v1 -> reallocation (v2 become v1 & v0 remain v0)
+						simplex_vertices[0].erase(simplex_vertices[0].begin()+1);
+						direction = v2_v0_orth_2d;
+					}
+					else
+					{
+						return COLLISION_FOUND;
+					}
+					std::cout << "case 3" << std::endl;
+					std::cout << "dot1 = " << dot1 << std::endl;
+					std::cout << "dot2 = " << dot1 << std::endl;
+					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
+					break;
+		
+		default:	std::cout << "Error: case dafault" << std::endl;
+					break;
+	}
+	
+	return addSupport(direction, simplex_vertices, r, ob);
+}
+
+enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, Obstacle r, Obstacle ob)
+{
+	enum gjkState result = UPDATE_SIMPLEX;
+	struct vec2_t newVertex;
+	float dot;
+	newVertex = getSupport(direction, r, ob);
+	simplex_vertices[0].push_back(newVertex);
+	dot = dotProduct(direction, normalize(newVertex));
+	if(dot < 0)
+	{
+		result = NO_COLLISION;
+	}
+	std::cout << "Add Support" << std::endl;
+	std::cout << "newVertex = ["<< newVertex.x << ", " << newVertex.y << "]" << std::endl;
+	std::cout << "simplex_vertices = { " << std::endl;
+	for(int i=0; i < simplex_vertices[0].size(); i++)
+	{
+		std::cout << "\t v"<< i << " = [" << simplex_vertices[0].at(i).x << ", " << simplex_vertices[0].at(i).y << "]" << std::endl;
+	}
+	std::cout << "}" << std::endl;
+	std::cout << "simplex_vertices.size() = " << simplex_vertices[0].size() << std::endl;
+	std::cout << "dotProduct(direction, newVertex) = " << dot << std::endl;
+	return result;
+}
+
+

@@ -17,6 +17,7 @@ class Obstacle
 		void drawBoundaries(cv::Mat image, cv::Scalar color, int thick, struct vec2_t offset);
 		struct vec2_t getCentre();
 		struct vec2_t support(struct vec2_t direction);
+		void move(struct vec2_t displacement);
 		
 	private:
 		int num_vertices;
