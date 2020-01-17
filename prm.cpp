@@ -28,13 +28,29 @@
 #define AXIS_LENGTH 50
 #define ARROW_LENGTH 6
 
-// Define functions //
+// PRM Parameters //
+#define N_CONFIG 2100 // total configuration
+
+// Define drawing functions //
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
 cv::Point drawVector(cv::Mat img, struct vec2_t origin, double width, double angle, cv::Scalar color);
 void drawLabel(cv::Mat img, std::string label, cv::Point origin);
+
+//Define function gjk v2.0 //
+enum gjkState{
+  		UPDATE_SIMPLEX,
+  		NO_COLLISION,
+  		COLLISION_FOUND
+  	};
 struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj);
+struct vec2_t getSupport(struct vec2_t direction, Obstacle ob1, Obstacle ob2);
+bool search(struct vec2_t *vett, struct vec2_t pt, int num);
 struct vec3_t vectorProduct(struct vec3_t a, struct vec3_t b);
+struct vec2_t normalize(struct vec2_t vett);
+struct vec3_t normalize(struct vec3_t vett);
 float dotProduct(struct vec2_t v, struct vec2_t dir);
+enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);
+enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);
 
 // Define namespace //
 using namespace cv;
@@ -170,34 +186,121 @@ int main(int argc, char** argv)
   	ob3.draw(env_image, cv::Scalar(0,0,0), origin);
   	ob4.draw(env_image, cv::Scalar(0,0,0), origin);
   	
+  	std::cout << "--- Display Robot & Obstacle ---" << std::endl;
+  	std::cout << "\tcentre mob = [" << mobile.getPosition().x << ", " << mobile.getPosition().y << "]" << std::endl;
+  	std::cout << "\tcentre ob1 = [" << ob1.getCentre().x << ", " << ob1.getCentre().y << "]" << std::endl;
+  	std::cout << "\tcentre ob2 = [" << ob2.getCentre().x << ", " << ob2.getCentre().y << "]" << std::endl;
+  	std::cout << "\tcentre ob3 = [" << ob3.getCentre().x << ", " << ob3.getCentre().y << "]" << std::endl;
+  	std::cout << "\tcentre ob4 = [" << ob4.getCentre().x << ", " << ob4.getCentre().y << "]" << std::endl;
+  	
   	/*----------------------------------------------
-		PRM Algorithm
+		PRM Algorithm (Mobile Robot Case)
 	----------------------------------------------*/
 	
-	//nel caso di un mobile robot
-	
+	std::cout << "--- PRM Algorithm (Mobile Robot Case) ---" << std::endl;
 	
 	// Sampling Strategy : Uniform Distribution
+	std::cout << "\tSampling Strategy : Uniform Distribution" << std::endl;
+	
 	struct vec2_t *setOfConfig; 
 	setOfConfig = (vec2_t*)malloc(50 * 50 * sizeof(*setOfConfig));
 	
-	for(int i=0; i < 2500; i++)
+	for(int i=0; i < N_CONFIG; i++)
 	{
-		setOfConfig[i].x = rand() % WINDOW;
-		setOfConfig[i].y = rand() % WINDOW;
+		setOfConfig[i].x = (rand() % WINDOW) - origin.x;
+		setOfConfig[i].y = (rand() % WINDOW) - origin.y;
 		
 		circle(
 			env_image,
-			cv::Point(setOfConfig[i].x, setOfConfig[i].y),
+			cv::Point(setOfConfig[i].x + origin.x, setOfConfig[i].y + origin.y),
 			3,
 			cv::Scalar(204,204,204),
 			1
 		);
 	}
+	std::cout << "\tdone" << std::endl;
+	
+	// GJK Collision Detection
+  	std::cout << "\tGJK Collision Detection" << std::endl;
   	
-  	struct vec2_t centre = ob1.getCentre();
-  	std::cout << "centre mob = [" << mobile.getPosition().x << ", " << mobile.getPosition().y << "]" << std::endl;
-  	std::cout << "centre ob1 = [" << centre.x << ", " << centre.y << "]" << std::endl;
+  	std::vector<struct vec2_t> simplex_vertices;
+	struct vec2_t direction;
+  	enum gjkState result;
+  	int checkOb = 0;
+  	bool checkAllObstacle = false;
+  	Obstacle *obx;
+  	obx = (Obstacle *)malloc(sizeof(obx));
+  	
+  	std::cout << "&ob1 = " << &ob1 << std::endl;
+  	std::cout << "&ob2 = " << &ob2 << std::endl;
+  	std::cout << "&ob3 = " << &ob3 << std::endl;
+  	std::cout << "&ob4 = " << &ob4 << std::endl;
+  	
+  	for(int i=0; i < N_CONFIG; i++)
+  	{
+  		simplex_vertices.clear();
+	  	mobile.setPosition(setOfConfig[i]);
+	  	std::cout << "cicle = " << i << std::endl;
+	  	std::cout << "mobile position =[" << setOfConfig[i].x << ", " << setOfConfig[i].y << "]" << std::endl;
+	  	result = UPDATE_SIMPLEX;
+	  	checkOb = 0;
+	  	obx = &ob1;
+	  	checkAllObstacle = false;
+	  	
+	  	while(result == UPDATE_SIMPLEX)
+	  	{
+	  		result = updateSimplex(direction, &simplex_vertices, mobile, *obx);
+	  		if(result == NO_COLLISION && checkAllObstacle == false)
+	  		{
+	  			switch(checkOb)
+	  			{
+	  				case 0:	obx = &ob2; 
+	  							checkOb++; 
+	  							result = UPDATE_SIMPLEX;
+	  							simplex_vertices.clear(); 
+	  							break;
+	  							
+	  				case 1: 	obx = &ob3; 
+	  							checkOb++; 
+	  							result = UPDATE_SIMPLEX;
+	  							simplex_vertices.clear();
+	  							break;
+	  							
+	  				case 2: 	obx = &ob4; 
+	  							checkOb++; 
+	  							result = UPDATE_SIMPLEX;
+	  							simplex_vertices.clear(); 
+	  							break;
+	  							
+	  				case 3: 	obx = &ob1; 
+	  							checkOb = 0; 
+	  							result = NO_COLLISION; 
+	  							checkAllObstacle = true; 
+	  							break;
+	  			}
+	  		}
+	  		std::cout << "obx = " << obx << std::endl;
+	  	}
+	  	
+	  	std::cout << "result " << result << std::endl;
+	  	
+	  	if(result == COLLISION_FOUND)
+	  	{
+	  		std::cout << "Collision!" << std::endl;
+	  		circle(
+				env_image,
+				cv::Point(setOfConfig[i].x + origin.x, setOfConfig[i].y + origin.y),
+				3,
+				cv::Scalar(0,0,255),
+				1
+			);
+	  	} 
+	  	else 
+	  	{
+	  		std::cout << "NO Collision!" << std::endl;
+	  	}
+	  	std::cout << std::endl;
+  	}
   	
   	
 	// Flip vertical entire image
@@ -246,17 +349,151 @@ int main(int argc, char** argv)
 	return(0);
 }
 
-void updateMap(cv::Mat &map_x, cv::Mat &map_y)
+struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj)
 {
-	for(int i = 0; i < map_x.rows; i++)
-	{
-		for(int j = 0; j < map_x.cols; j++)
-		{
-			map_x.at<float>(i, j) = (float)j;
-      	map_y.at<float>(i, j) = (float)(map_x.rows - i);
-		}
-	}
+	return mobile.support(direction) - obj.support(direction*(-1));;
 }
+
+struct vec2_t getSupport(struct vec2_t direction, Obstacle ob1, Obstacle ob2)
+{
+	return ob1.support(direction) - ob2.support(direction*(-1));;
+}
+
+struct vec3_t vectorProduct(struct vec3_t a, struct vec3_t b)
+{
+	struct vec3_t result;
+	result.x = a.y * b.z - a.z * b.y;
+	result.y = - a.x * b.z + a.z * b.x;
+	result.z = a.x * b.y - a.y * b.x;
+	return result;
+}
+
+struct vec2_t normalize(struct vec2_t vett)
+{
+	float mod = sqrt(pow(vett.x, 2) + pow(vett.y, 2));
+	return vec2_t(vett.x/mod, vett.y/mod);
+}
+
+struct vec3_t normalize(struct vec3_t vett)
+{
+	float mod = sqrt(pow(vett.x, 2) + pow(vett.y, 2) + pow(vett.z, 2));
+	return vec3_t(vett.x/mod, vett.y/mod, vett.z/mod);
+}
+
+float dotProduct(struct vec2_t v, struct vec2_t dir)
+{
+	return (v.x * dir.x + v.y * dir.y);
+}
+
+enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob)
+{
+	struct vec2_t a, v2_o, v2_v1, v2_v0, v2_v1_orth_2d, v2_v0_orth_2d;
+	struct vec3_t tmp, v2_v1_orth, v2_v0_orth;
+	float dot1, dot2;
+	
+	
+	std::cout << "simplex_vertices.size() = " << simplex_vertices[0].size() << std::endl;
+	switch(simplex_vertices[0].size())
+	{
+		case 0:	direction = r.getPosition() - ob.getCentre();
+					std::cout << "case 0" << std::endl;
+					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
+					break;
+					
+		case 1:	direction = direction*(-1);
+					std::cout << "case 1" << std::endl;
+					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
+					break;
+					
+		case 2:	a = simplex_vertices[0].at(0) - simplex_vertices[0].at(1);
+  					tmp = vectorProduct(vec3_t(a.x, a.y, 0), vec3_t(-simplex_vertices[0].at(0).x, -simplex_vertices[0].at(0).y, 0));
+  					tmp = vectorProduct(tmp, vec3_t(a.x, a.y, 0));
+  					tmp = normalize(tmp);
+  					direction.x = tmp.x;
+  					direction.y = tmp.y;
+  					std::cout << "case 2" << std::endl;
+					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
+  					break;
+  		
+  		case 3:	v2_o = simplex_vertices[0].at(2)*(-1);								//v2 to the origin
+					v2_v1 = simplex_vertices[0].at(1) - simplex_vertices[0].at(2);	//v2 to v1
+					v2_v0 = simplex_vertices[0].at(0) - simplex_vertices[0].at(2); //v2 to v0
+					
+					v2_v1_orth = vectorProduct(vec3_t(v2_v0.x, v2_v0.y, 0), vec3_t(v2_v1.x, v2_v1.y, 0));
+					v2_v1_orth = normalize(v2_v1_orth);
+					v2_v1_orth = vectorProduct(v2_v1_orth, vec3_t(v2_v1.x, v2_v1.y, 0));
+					v2_v1_orth = normalize(v2_v1_orth);
+					
+					v2_v0_orth = vectorProduct(vec3_t(v2_v1.x, v2_v1.y, 0), vec3_t(v2_v0.x, v2_v0.y, 0));
+					v2_v0_orth = normalize(v2_v0_orth);
+					v2_v0_orth = vectorProduct(v2_v0_orth, vec3_t(v2_v0.x, v2_v0.y, 0));
+					v2_v0_orth = normalize(v2_v0_orth);
+					
+					v2_o = normalize(v2_o);
+					v2_v1_orth_2d = vec2_t(v2_v1_orth.x, v2_v1_orth.y);
+					v2_v0_orth_2d = vec2_t(v2_v0_orth.x, v2_v0_orth.y);
+					dot1 = dotProduct(v2_o, v2_v1_orth_2d);
+					dot2 = dotProduct(v2_o, v2_v0_orth_2d);
+					if(dot1 > 0)
+					{
+						// remove v0 -> reallocation (v1 become v0 & v2 become v1)
+						simplex_vertices[0].erase(simplex_vertices[0].begin());
+						direction = v2_v1_orth_2d;
+					}
+					else if(dot2 > 0)
+					{
+						// remove v1 -> reallocation (v2 become v1 & v0 remain v0)
+						simplex_vertices[0].erase(simplex_vertices[0].begin()+1);
+						direction = v2_v0_orth_2d;
+					}
+					else
+					{
+						return COLLISION_FOUND;
+					}
+					std::cout << "case 3" << std::endl;
+					std::cout << "dot1 = " << dot1 << std::endl;
+					std::cout << "dot2 = " << dot1 << std::endl;
+					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
+					break;
+		
+		default:	std::cout << "Error: case dafault" << std::endl;
+					break;
+	}
+	
+	return addSupport(direction, simplex_vertices, r, ob);
+}
+
+enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob)
+{
+	enum gjkState result = UPDATE_SIMPLEX;
+	struct vec2_t newVertex;
+	float dot;
+	newVertex = getSupport(direction, r, ob);
+	simplex_vertices[0].push_back(newVertex);
+	dot = dotProduct(direction, normalize(newVertex));
+	if(dot < 0)
+	{
+		result = NO_COLLISION;
+	}
+	std::cout << "Add Support" << std::endl;
+	std::cout << "newVertex = ["<< newVertex.x << ", " << newVertex.y << "]" << std::endl;
+	std::cout << "simplex_vertices = { " << std::endl;
+	for(int i=0; i < simplex_vertices[0].size(); i++)
+	{
+		std::cout << "\t v"<< i << " = [" << simplex_vertices[0].at(i).x << ", " << simplex_vertices[0].at(i).y << "]" << std::endl;
+	}
+	std::cout << "}" << std::endl;
+	std::cout << "simplex_vertices.size() = " << simplex_vertices[0].size() << std::endl;
+	std::cout << "dotProduct(direction, newVertex) = " << dot << std::endl;
+	return result;
+}
+
+void drawLabel(cv::Mat img, std::string label, cv::Point origin)
+{	
+	cv::Point tmp(origin.x + LABEL_OFFSET, WINDOW - origin.y - LABEL_OFFSET);
+	putText(img, label, tmp, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0,0,0), 1, LINE_AA);
+}
+
 
 cv::Point drawVector(cv::Mat img, struct vec2_t origin, double width, double angle, cv::Scalar color)
 {
@@ -292,27 +529,14 @@ cv::Point drawVector(cv::Mat img, struct vec2_t origin, double width, double ang
     return vectorAxis;
 }
 
-void drawLabel(cv::Mat img, std::string label, cv::Point origin)
-{	
-	cv::Point tmp(origin.x + LABEL_OFFSET, WINDOW - origin.y - LABEL_OFFSET);
-	putText(img, label, tmp, FONT_HERSHEY_SIMPLEX, 0.5, Scalar(0,0,0), 1, LINE_AA);
-}
-
-struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj)
+void updateMap(cv::Mat &map_x, cv::Mat &map_y)
 {
-	return mobile.support(direction) - obj.support(direction*(-1));;
-}
-
-struct vec3_t vectorProduct(struct vec3_t a, struct vec3_t b)
-{
-	struct vec3_t result;
-	result.x = a.y * b.z - a.z * b.y;
-	result.y = a.x * b.z - a.z * b.x;
-	result.z = a.x * b.y - a.y * b.x;
-	return result;
-}
-
-float dotProduct(struct vec2_t v, struct vec2_t dir)
-{
-	return (v.x * dir.x + v.y * dir.y);
+	for(int i = 0; i < map_x.rows; i++)
+	{
+		for(int j = 0; j < map_x.cols; j++)
+		{
+			map_x.at<float>(i, j) = (float)j;
+      	map_y.at<float>(i, j) = (float)(map_x.rows - i);
+		}
+	}
 }
