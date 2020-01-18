@@ -3,6 +3,7 @@
 
 CMakeFiles/prm.dir/prm.cpp.o
  ../include/endeffector.h
+ ../include/gjkdetector.h
  ../include/joint.h
  ../include/linear.h
  ../include/mobilerobot.h
@@ -10,6 +11,7 @@ CMakeFiles/prm.dir/prm.cpp.o
  ../include/robot.h
  ../include/rotoidal.h
  ../include/structures.h
+ ../include/vector.h
  /home/luca/software/projectACA/project/prm.cpp
  /usr/local/include/opencv4/opencv2/calib3d.hpp
  /usr/local/include/opencv4/opencv2/core.hpp

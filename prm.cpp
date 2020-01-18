@@ -16,6 +16,7 @@
 #include "obstacle.h"
 #include "mobilerobot.h"
 #include "structures.h"
+#include "gjkdetector.h"
 
 #include <time.h>
 
@@ -29,7 +30,7 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 2100 // total configuration
+#define N_CONFIG 500 // total configuration
 
 // Define drawing functions //
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
@@ -37,7 +38,7 @@ cv::Point drawVector(cv::Mat img, struct vec2_t origin, double width, double ang
 void drawLabel(cv::Mat img, std::string label, cv::Point origin);
 
 //Define function gjk v2.0 //
-enum gjkState{
+/*enum gjkState{
   		UPDATE_SIMPLEX,
   		NO_COLLISION,
   		COLLISION_FOUND
@@ -50,7 +51,7 @@ struct vec2_t normalize(struct vec2_t vett);
 struct vec3_t normalize(struct vec3_t vett);
 float dotProduct(struct vec2_t v, struct vec2_t dir);
 enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);
-enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);
+enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);*/
 
 // Define namespace //
 using namespace cv;
@@ -202,24 +203,39 @@ int main(int argc, char** argv)
 	// Sampling Strategy : Uniform Distribution
 	std::cout << "\tSampling Strategy : Uniform Distribution" << std::endl;
 	
+	GJKDetector gjk;
 	struct vec2_t *setOfConfig; 
-	setOfConfig = (vec2_t*)malloc(50 * 50 * sizeof(*setOfConfig));
+	setOfConfig = (vec2_t*)malloc(N_CONFIG * sizeof(*setOfConfig));
 	
 	for(int i=0; i < N_CONFIG; i++)
 	{
 		setOfConfig[i].x = (rand() % WINDOW) - origin.x;
 		setOfConfig[i].y = (rand() % WINDOW) - origin.y;
 		
-		circle(
-			env_image,
-			cv::Point(setOfConfig[i].x + origin.x, setOfConfig[i].y + origin.y),
-			3,
-			cv::Scalar(204,204,204),
-			1
-		);
+	  	if(gjk.checkCollision(setOfConfig[i], mobile, ob1) == COLLISION_FOUND)
+	  	{
+	  		circle(
+	  			env_image,
+	  			cv::Point(setOfConfig[i].x + origin.x, setOfConfig[i].y + origin.y),
+	  			3,
+	  			cv::Scalar(0,0,255),
+	  			1
+	  		);
+	  	} 
+	  	else 
+	  	{
+	  		circle(
+				env_image,
+				cv::Point(setOfConfig[i].x + origin.x, setOfConfig[i].y + origin.y),
+				3,
+				cv::Scalar(204,204,204),
+				1
+			);
+	  	}
 	}
 	std::cout << "\tdone" << std::endl;
 	
+#if 0
 	// GJK Collision Detection
   	std::cout << "\tGJK Collision Detection" << std::endl;
   	
@@ -301,7 +317,7 @@ int main(int argc, char** argv)
 	  	}
 	  	std::cout << std::endl;
   	}
-  	
+#endif
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -349,6 +365,7 @@ int main(int argc, char** argv)
 	return(0);
 }
 
+#if 0
 struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj)
 {
 	return mobile.support(direction) - obj.support(direction*(-1));;
@@ -487,6 +504,7 @@ enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *si
 	std::cout << "dotProduct(direction, newVertex) = " << dot << std::endl;
 	return result;
 }
+#endif
 
 void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 {	
