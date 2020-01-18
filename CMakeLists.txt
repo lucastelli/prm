@@ -15,6 +15,11 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 # bring the headers into the project
 include_directories(include)
 
+# add support functions library into the project
+include_directories(functions)
+link_directories(functions)
+add_subdirectory(functions)
+
 # add class library
 include_directories(class)
 link_directories(class)
@@ -29,7 +34,9 @@ target_include_directories(prm PUBLIC "${PROJECT_BINARY_DIR}")
                            
 target_link_libraries( ${PROJECT_NAME} class)
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
+target_link_libraries( ${PROJECT_NAME} functions)
 
 target_link_libraries( gjk class)
 target_link_libraries( gjk ${OpenCV_LIBS} )
+target_link_libraries( gjk functions)
 

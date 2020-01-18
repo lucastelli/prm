@@ -179,6 +179,33 @@ endeffector.cpp.s:
 	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/endeffector.cpp.s
 .PHONY : endeffector.cpp.s
 
+gjkdetector.o: gjkdetector.cpp.o
+
+.PHONY : gjkdetector.o
+
+# target to build an object file
+gjkdetector.cpp.o:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/gjkdetector.cpp.o
+.PHONY : gjkdetector.cpp.o
+
+gjkdetector.i: gjkdetector.cpp.i
+
+.PHONY : gjkdetector.i
+
+# target to preprocess a source file
+gjkdetector.cpp.i:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/gjkdetector.cpp.i
+.PHONY : gjkdetector.cpp.i
+
+gjkdetector.s: gjkdetector.cpp.s
+
+.PHONY : gjkdetector.s
+
+# target to generate assembly for a file
+gjkdetector.cpp.s:
+	cd /home/luca/software/projectACA/project/build && $(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/gjkdetector.cpp.s
+.PHONY : gjkdetector.cpp.s
+
 joint.o: joint.cpp.o
 
 .PHONY : joint.o
@@ -329,6 +356,9 @@ help:
 	@echo "... endeffector.o"
 	@echo "... endeffector.i"
 	@echo "... endeffector.s"
+	@echo "... gjkdetector.o"
+	@echo "... gjkdetector.i"
+	@echo "... gjkdetector.s"
 	@echo "... joint.o"
 	@echo "... joint.i"
 	@echo "... joint.s"

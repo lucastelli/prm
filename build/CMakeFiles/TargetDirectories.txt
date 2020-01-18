@@ -2,6 +2,9 @@
 /home/luca/software/projectACA/project/build/CMakeFiles/edit_cache.dir
 /home/luca/software/projectACA/project/build/CMakeFiles/prm.dir
 /home/luca/software/projectACA/project/build/CMakeFiles/gjk.dir
+/home/luca/software/projectACA/project/build/functions/CMakeFiles/rebuild_cache.dir
+/home/luca/software/projectACA/project/build/functions/CMakeFiles/functions.dir
+/home/luca/software/projectACA/project/build/functions/CMakeFiles/edit_cache.dir
 /home/luca/software/projectACA/project/build/class/CMakeFiles/rebuild_cache.dir
 /home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir
 /home/luca/software/projectACA/project/build/class/CMakeFiles/edit_cache.dir

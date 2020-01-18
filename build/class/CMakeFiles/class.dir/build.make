@@ -83,9 +83,22 @@ class/CMakeFiles/class.dir/endeffector.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/class.dir/endeffector.cpp.s"
 	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/luca/software/projectACA/project/class/endeffector.cpp -o CMakeFiles/class.dir/endeffector.cpp.s
 
+class/CMakeFiles/class.dir/gjkdetector.cpp.o: class/CMakeFiles/class.dir/flags.make
+class/CMakeFiles/class.dir/gjkdetector.cpp.o: ../class/gjkdetector.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object class/CMakeFiles/class.dir/gjkdetector.cpp.o"
+	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/class.dir/gjkdetector.cpp.o -c /home/luca/software/projectACA/project/class/gjkdetector.cpp
+
+class/CMakeFiles/class.dir/gjkdetector.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/class.dir/gjkdetector.cpp.i"
+	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/luca/software/projectACA/project/class/gjkdetector.cpp > CMakeFiles/class.dir/gjkdetector.cpp.i
+
+class/CMakeFiles/class.dir/gjkdetector.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/class.dir/gjkdetector.cpp.s"
+	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/luca/software/projectACA/project/class/gjkdetector.cpp -o CMakeFiles/class.dir/gjkdetector.cpp.s
+
 class/CMakeFiles/class.dir/joint.cpp.o: class/CMakeFiles/class.dir/flags.make
 class/CMakeFiles/class.dir/joint.cpp.o: ../class/joint.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object class/CMakeFiles/class.dir/joint.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object class/CMakeFiles/class.dir/joint.cpp.o"
 	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/class.dir/joint.cpp.o -c /home/luca/software/projectACA/project/class/joint.cpp
 
 class/CMakeFiles/class.dir/joint.cpp.i: cmake_force
@@ -98,7 +111,7 @@ class/CMakeFiles/class.dir/joint.cpp.s: cmake_force
 
 class/CMakeFiles/class.dir/linear.cpp.o: class/CMakeFiles/class.dir/flags.make
 class/CMakeFiles/class.dir/linear.cpp.o: ../class/linear.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object class/CMakeFiles/class.dir/linear.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object class/CMakeFiles/class.dir/linear.cpp.o"
 	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/class.dir/linear.cpp.o -c /home/luca/software/projectACA/project/class/linear.cpp
 
 class/CMakeFiles/class.dir/linear.cpp.i: cmake_force
@@ -111,7 +124,7 @@ class/CMakeFiles/class.dir/linear.cpp.s: cmake_force
 
 class/CMakeFiles/class.dir/obstacle.cpp.o: class/CMakeFiles/class.dir/flags.make
 class/CMakeFiles/class.dir/obstacle.cpp.o: ../class/obstacle.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object class/CMakeFiles/class.dir/obstacle.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object class/CMakeFiles/class.dir/obstacle.cpp.o"
 	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/class.dir/obstacle.cpp.o -c /home/luca/software/projectACA/project/class/obstacle.cpp
 
 class/CMakeFiles/class.dir/obstacle.cpp.i: cmake_force
@@ -124,7 +137,7 @@ class/CMakeFiles/class.dir/obstacle.cpp.s: cmake_force
 
 class/CMakeFiles/class.dir/robot.cpp.o: class/CMakeFiles/class.dir/flags.make
 class/CMakeFiles/class.dir/robot.cpp.o: ../class/robot.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object class/CMakeFiles/class.dir/robot.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object class/CMakeFiles/class.dir/robot.cpp.o"
 	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/class.dir/robot.cpp.o -c /home/luca/software/projectACA/project/class/robot.cpp
 
 class/CMakeFiles/class.dir/robot.cpp.i: cmake_force
@@ -137,7 +150,7 @@ class/CMakeFiles/class.dir/robot.cpp.s: cmake_force
 
 class/CMakeFiles/class.dir/rotoidal.cpp.o: class/CMakeFiles/class.dir/flags.make
 class/CMakeFiles/class.dir/rotoidal.cpp.o: ../class/rotoidal.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object class/CMakeFiles/class.dir/rotoidal.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object class/CMakeFiles/class.dir/rotoidal.cpp.o"
 	cd /home/luca/software/projectACA/project/build/class && /usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/class.dir/rotoidal.cpp.o -c /home/luca/software/projectACA/project/class/rotoidal.cpp
 
 class/CMakeFiles/class.dir/rotoidal.cpp.i: cmake_force
@@ -152,6 +165,7 @@ class/CMakeFiles/class.dir/rotoidal.cpp.s: cmake_force
 class_OBJECTS = \
 "CMakeFiles/class.dir/MobileRobot.cpp.o" \
 "CMakeFiles/class.dir/endeffector.cpp.o" \
+"CMakeFiles/class.dir/gjkdetector.cpp.o" \
 "CMakeFiles/class.dir/joint.cpp.o" \
 "CMakeFiles/class.dir/linear.cpp.o" \
 "CMakeFiles/class.dir/obstacle.cpp.o" \
@@ -163,6 +177,7 @@ class_EXTERNAL_OBJECTS =
 
 class/libclass.a: class/CMakeFiles/class.dir/MobileRobot.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/endeffector.cpp.o
+class/libclass.a: class/CMakeFiles/class.dir/gjkdetector.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/joint.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/linear.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/obstacle.cpp.o
@@ -170,7 +185,7 @@ class/libclass.a: class/CMakeFiles/class.dir/robot.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/rotoidal.cpp.o
 class/libclass.a: class/CMakeFiles/class.dir/build.make
 class/libclass.a: class/CMakeFiles/class.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Linking CXX static library libclass.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Linking CXX static library libclass.a"
 	cd /home/luca/software/projectACA/project/build/class && $(CMAKE_COMMAND) -P CMakeFiles/class.dir/cmake_clean_target.cmake
 	cd /home/luca/software/projectACA/project/build/class && $(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/class.dir/link.txt --verbose=$(VERBOSE)
 

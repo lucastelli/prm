@@ -68,10 +68,11 @@ CMAKE_BINARY_DIR = /home/luca/software/projectACA/project/build
 # Target rules for target CMakeFiles/prm.dir
 
 # All Build rule for target.
+CMakeFiles/prm.dir/all: functions/CMakeFiles/functions.dir/all
 CMakeFiles/prm.dir/all: class/CMakeFiles/class.dir/all
 	$(MAKE) -f CMakeFiles/prm.dir/build.make CMakeFiles/prm.dir/depend
 	$(MAKE) -f CMakeFiles/prm.dir/build.make CMakeFiles/prm.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=11,12 "Built target prm"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=14,15 "Built target prm"
 .PHONY : CMakeFiles/prm.dir/all
 
 # Include target in all.
@@ -81,7 +82,7 @@ all: CMakeFiles/prm.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/prm.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 13
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/prm.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 0
 .PHONY : CMakeFiles/prm.dir/rule
@@ -105,10 +106,11 @@ clean: CMakeFiles/prm.dir/clean
 # Target rules for target CMakeFiles/gjk.dir
 
 # All Build rule for target.
+CMakeFiles/gjk.dir/all: functions/CMakeFiles/functions.dir/all
 CMakeFiles/gjk.dir/all: class/CMakeFiles/class.dir/all
 	$(MAKE) -f CMakeFiles/gjk.dir/build.make CMakeFiles/gjk.dir/depend
 	$(MAKE) -f CMakeFiles/gjk.dir/build.make CMakeFiles/gjk.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=9,10 "Built target gjk"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=12,13 "Built target gjk"
 .PHONY : CMakeFiles/gjk.dir/all
 
 # Include target in all.
@@ -118,7 +120,7 @@ all: CMakeFiles/gjk.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/gjk.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 10
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 13
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/gjk.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 0
 .PHONY : CMakeFiles/gjk.dir/rule
@@ -135,6 +137,61 @@ CMakeFiles/gjk.dir/clean:
 
 # clean rule for target.
 clean: CMakeFiles/gjk.dir/clean
+
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory functions
+
+# Convenience name for "all" pass in the directory.
+functions/all: functions/CMakeFiles/functions.dir/all
+
+.PHONY : functions/all
+
+# Convenience name for "clean" pass in the directory.
+functions/clean: functions/CMakeFiles/functions.dir/clean
+
+.PHONY : functions/clean
+
+# Convenience name for "preinstall" pass in the directory.
+functions/preinstall:
+
+.PHONY : functions/preinstall
+
+#=============================================================================
+# Target rules for target functions/CMakeFiles/functions.dir
+
+# All Build rule for target.
+functions/CMakeFiles/functions.dir/all:
+	$(MAKE) -f functions/CMakeFiles/functions.dir/build.make functions/CMakeFiles/functions.dir/depend
+	$(MAKE) -f functions/CMakeFiles/functions.dir/build.make functions/CMakeFiles/functions.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=10,11 "Built target functions"
+.PHONY : functions/CMakeFiles/functions.dir/all
+
+# Include target in all.
+all: functions/CMakeFiles/functions.dir/all
+
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+functions/CMakeFiles/functions.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 functions/CMakeFiles/functions.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 0
+.PHONY : functions/CMakeFiles/functions.dir/rule
+
+# Convenience name for target.
+functions: functions/CMakeFiles/functions.dir/rule
+
+.PHONY : functions
+
+# clean rule for target.
+functions/CMakeFiles/functions.dir/clean:
+	$(MAKE) -f functions/CMakeFiles/functions.dir/build.make functions/CMakeFiles/functions.dir/clean
+.PHONY : functions/CMakeFiles/functions.dir/clean
+
+# clean rule for target.
+clean: functions/CMakeFiles/functions.dir/clean
 
 .PHONY : clean
 
@@ -163,7 +220,7 @@ class/preinstall:
 class/CMakeFiles/class.dir/all:
 	$(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/depend
 	$(MAKE) -f class/CMakeFiles/class.dir/build.make class/CMakeFiles/class.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8 "Built target class"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/luca/software/projectACA/project/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8,9 "Built target class"
 .PHONY : class/CMakeFiles/class.dir/all
 
 # Include target in all.
@@ -173,7 +230,7 @@ all: class/CMakeFiles/class.dir/all
 
 # Build rule for subdir invocation for target.
 class/CMakeFiles/class.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 8
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 9
 	$(MAKE) -f CMakeFiles/Makefile2 class/CMakeFiles/class.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/luca/software/projectACA/project/build/CMakeFiles 0
 .PHONY : class/CMakeFiles/class.dir/rule

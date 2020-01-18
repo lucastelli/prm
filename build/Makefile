@@ -137,6 +137,19 @@ gjk/fast:
 .PHONY : gjk/fast
 
 #=============================================================================
+# Target rules for targets named functions
+
+# Build rule for target.
+functions: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 functions
+.PHONY : functions
+
+# fast build rule for target.
+functions/fast:
+	$(MAKE) -f functions/CMakeFiles/functions.dir/build.make functions/CMakeFiles/functions.dir/build
+.PHONY : functions/fast
+
+#=============================================================================
 # Target rules for targets named class
 
 # Build rule for target.
@@ -213,6 +226,7 @@ help:
 	@echo "... edit_cache"
 	@echo "... prm"
 	@echo "... gjk"
+	@echo "... functions"
 	@echo "... class"
 	@echo "... gjk.o"
 	@echo "... gjk.i"

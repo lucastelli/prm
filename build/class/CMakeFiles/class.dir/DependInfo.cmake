@@ -6,6 +6,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_CHECK_CXX
   "/home/luca/software/projectACA/project/class/MobileRobot.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/MobileRobot.cpp.o"
   "/home/luca/software/projectACA/project/class/endeffector.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/endeffector.cpp.o"
+  "/home/luca/software/projectACA/project/class/gjkdetector.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/gjkdetector.cpp.o"
   "/home/luca/software/projectACA/project/class/joint.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/joint.cpp.o"
   "/home/luca/software/projectACA/project/class/linear.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/linear.cpp.o"
   "/home/luca/software/projectACA/project/class/obstacle.cpp" "/home/luca/software/projectACA/project/build/class/CMakeFiles/class.dir/obstacle.cpp.o"
@@ -18,6 +19,7 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
   "/usr/local/include/opencv4"
   "../include"
+  "../functions"
   "../class"
   )
 

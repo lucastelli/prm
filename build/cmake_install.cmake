@@ -39,6 +39,7 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("/home/luca/software/projectACA/project/build/functions/cmake_install.cmake")
   include("/home/luca/software/projectACA/project/build/class/cmake_install.cmake")
 
 endif()

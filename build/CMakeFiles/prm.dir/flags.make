@@ -6,5 +6,5 @@ CXX_FLAGS =   -std=gnu++11
 
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/home/luca/software/projectACA/project/include -I/home/luca/software/projectACA/project/class -I/home/luca/software/projectACA/project/build -isystem /usr/local/include/opencv4 
+CXX_INCLUDES = -I/home/luca/software/projectACA/project/include -I/home/luca/software/projectACA/project/functions -I/home/luca/software/projectACA/project/class -I/home/luca/software/projectACA/project/build -isystem /usr/local/include/opencv4 
 
