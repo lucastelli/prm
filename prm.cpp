@@ -30,7 +30,7 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 		50 	// total configuration
+#define N_CONFIG 		30 	// total configuration
 #define N_NEIGHBORS 	3
 
 // Define drawing functions //
@@ -217,7 +217,7 @@ int main(int argc, char** argv)
 	struct vec2_t *conf_array;		// Array of free-collision configurations
 	int num_conf = 0;					// number of free-collision configurations
 																
-	conf_array = (struct vec2_t *)malloc(N_CONFIG * sizeof(*conf_array));
+	conf_array = (struct vec2_t *)calloc(N_CONFIG, sizeof(*conf_array));
 	
 	// Initialization array of obstacles
 	obs = (Obstacle *)malloc(4*sizeof(*obs));
@@ -250,7 +250,7 @@ int main(int argc, char** argv)
 				cv::Scalar(204,204,204),
 				1
 			);
-	  	} 
+	  	}
 	  	else 
 	  	{
 	  		// Configuration isn't collision-free -> NO add to graph
@@ -271,6 +271,7 @@ int main(int argc, char** argv)
   		std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
   	}
   	std::cout << "num_conf = " << num_conf << std::endl;
+  	
   	// Create PRM Roadmap
   	// Connection Strategy: kd-tree data structure
   	//	->	kd-tree construction
@@ -280,115 +281,7 @@ int main(int argc, char** argv)
   	tree.axis = X;
   	// search median
   	
-  	int right = num_conf-1;
   	
-  	
-  	tree.value = medianXAxis(conf_array, 0, num_conf-1);
-  	treePointer = &tree;
-  	std::cout << "treePointer->value = " << treePointer->value << std::endl;
-  	
-  	line(
-  		env_image,
-  		cv::Point(origin.x + treePointer->value, 0),
-  		cv::Point(origin.x + tree.value, WINDOW),
-  		cv::Scalar(0,255,0),
-  		1
-  	);
-  	
-  	std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
-  	for(int i=0; i<num_conf; i++)
-  	{
-  		std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
-  	}
-  	
-  	int cicle = 1;
-  	right = (num_conf-1)/2;
-  	while(right >= 1) // more than one point
-  	{
-  		treePointer->left = (kdTreeNode *)malloc(sizeof(struct kdTreeNode));
-	  	treePointer->left->parent = treePointer;
-	  	treePointer = treePointer->left;
-  		if(treePointer->parent->axis == X)
-  		{
-  			treePointer->axis = Y;
-  			treePointer->value = medianYAxis(conf_array, 0, right);
-  			std::cout << "treePointer->valueY = " << treePointer->value << std::endl;
-  			
-  			line(
-		  		env_image,
-		  		cv::Point(0, origin.y + treePointer->value),
-		  		cv::Point(origin.x + treePointer->parent->value, origin.y + treePointer->value),
-		  		cv::Scalar(0,255,0),
-		  		1
-  			);
-  		} 
-  		else
-  		{
-	  		treePointer->axis = X;
-  			treePointer->value = medianXAxis(conf_array, 0, right);
-  			std::cout << "treePointer->valueX = " << treePointer->value << std::endl;
-  			
-  			line(
-		  		env_image,
-		  		cv::Point(origin.x + treePointer->value, origin.y + treePointer->parent->value),
-		  		cv::Point(origin.x + treePointer->value, 0),
-		  		cv::Scalar(0,255,0),
-		  		1
-  			);
-  		}
-  		
-  		std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
-		for(int i=0; i<num_conf; i++)
-		{
-			std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
-		}
-  		cicle++;
-  		right = (num_conf-1)/pow(2, cicle);
-  	}
-  	std::cout << "pointLeft = [" << conf_array[right].x << ", " << conf_array[right].y << "]" << std::endl;
-  	
-  	
-  	/*std::cout << "treePointer(tree) = " << treePointer << std::endl;
-  	treePointer->left = (kdTreeNode *)malloc(sizeof(struct kdTreeNode));
-  	std::cout << "treePointer->left = " << treePointer->left << std::endl;
-  	treePointer->left->parent = treePointer;
-  	std::cout << "treePointer->left->parent = " << treePointer->parent << std::endl;
-  	treePointer = treePointer->left;
-  	std::cout << "treePointer = " << treePointer << std::endl;	
-  	
-  	treePointer->axis = Y;
-  	treePointer->value = medianYAxis(conf_array, 0, (num_conf-1)/2, (num_conf-1)/2-1);
-  	std::cout << "treePointer->value = " << treePointer->value << std::endl;
-  	
-  	line(
-  		env_image,
-  		cv::Point(0, origin.y + treePointer->value),
-  		cv::Point(origin.x + treePointer->parent->value, origin.y + treePointer->value),
-  		cv::Scalar(0,255,0),
-  		1
-  	);
-  	
-  	std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
-  	for(int i=0; i<num_conf; i++)
-  	{
-  		std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
-  	}
-  	
-  	treePointer->left = (kdTreeNode *)malloc(sizeof(struct kdTreeNode));
-  	treePointer->left->parent = treePointer;
-  	treePointer = treePointer->left;
-  	
-  	treePointer->axis = X;
-  	treePointer->value = medianXAxis(conf_array, 0, (num_conf-1)/4, (num_conf-1)/2-2);
-  	std::cout << "treePointer->value = " << treePointer->value << std::endl;
-  	
-  	line(
-  		env_image,
-  		cv::Point(origin.x + treePointer->value, origin.y + treePointer->parent->value),
-  		cv::Point(origin.x + treePointer->value, 0),
-  		cv::Scalar(0,255,0),
-  		1
-  	);*/
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
