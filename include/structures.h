@@ -1,6 +1,9 @@
 #ifndef STRUCTURES_H_
 #define STRUCTURES_H_
 
+/*------------------------//
+		 	Vector 2D
+//------------------------*/
 struct vec2_t
 {
 	float x;
@@ -36,6 +39,9 @@ struct vec2_t
 	}
 };
 
+/*------------------------//
+		 	Vector 3D
+//------------------------*/
 struct vec3_t
 {
 	float x;
@@ -73,11 +79,40 @@ struct vec3_t
 	}
 };
 
+/*------------------------//
+		Node of a graph
+//------------------------*/
 struct node 
 {
-	struct vec2_t element;
-	int num;
-	struct node **neighbors;
+	struct vec2_t element;		// payload
+	int num;							// num of neighbors
+	struct node **neighbors; 	// array of reference
 };
+
+/*------------------------//
+		k-d Tree node
+//------------------------*/
+enum treeAxis
+{
+	X, 
+	Y
+};
+
+enum treeDirection
+{
+	LEFT, 
+	RIGHT
+};
+
+struct kdTreeNode
+{
+	enum treeAxis axis;
+	float value = 0;
+	struct kdTreeNode *left = NULL;
+	struct kdTreeNode *right = NULL;
+	struct kdTreeNode *parent = NULL;
+	struct vec2_t *point = NULL;
+};
+
 #endif
 

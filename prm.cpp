@@ -26,11 +26,12 @@
 // Frame Reference Parameters //
 #define FRAME_OFFSET 5
 #define LABEL_OFFSET 2
-#define AXIS_LENGTH 50
+#define AXIS_LENGTH 	50
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 500 // total configuration
+#define N_CONFIG 		50 	// total configuration
+#define N_NEIGHBORS 	3
 
 // Define drawing functions //
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
@@ -52,6 +53,16 @@ struct vec3_t normalize(struct vec3_t vett);
 float dotProduct(struct vec2_t v, struct vec2_t dir);
 enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);
 enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);*/
+
+float medianXAxis(struct vec2_t *array, int left, int right);
+//void selectXAxis(struct vec2_t *array, int l, int r, int k);
+void quicksortXaxis(struct vec2_t *array, int l, int r);
+int partitionXAxis(struct vec2_t *array, int l, int r);
+float medianYAxis(struct vec2_t *array, int left, int right);
+//void selectYAxis(struct vec2_t *array, int l, int r, int k);
+void quicksortYaxis(struct vec2_t *array, int l, int r);
+int partitionYAxis(struct vec2_t *array, int l, int r);
+void swap(struct vec2_t *array, int i, int j);
 
 // Define namespace //
 using namespace cv;
@@ -200,124 +211,184 @@ int main(int argc, char** argv)
 	
 	std::cout << "--- PRM Algorithm (Mobile Robot Case) ---" << std::endl;
 	
-	// Sampling Strategy : Uniform Distribution
-	std::cout << "\tSampling Strategy : Uniform Distribution" << std::endl;
+	GJKDetector gjk;					// GJK detector object
+	struct vec2_t config_sample;	// Configuration sampled by PRM sampling strategy
+	Obstacle *obs;						// Array of obstacles in the work-space
+	struct vec2_t *conf_array;		// Array of free-collision configurations
+	int num_conf = 0;					// number of free-collision configurations
+																
+	conf_array = (struct vec2_t *)malloc(N_CONFIG * sizeof(*conf_array));
 	
-	GJKDetector gjk;
-	struct vec2_t *setOfConfig; 
-	setOfConfig = (vec2_t*)malloc(N_CONFIG * sizeof(*setOfConfig));
+	// Initialization array of obstacles
+	obs = (Obstacle *)malloc(4*sizeof(*obs));
+	obs[0] = ob1;
+	obs[1] = ob2;
+	obs[2] = ob3;
+	obs[3] = ob4;
 	
+	std::cout << "Initialization of PRM graph" << std::endl;
+	// Initialization of PRM graph
 	for(int i=0; i < N_CONFIG; i++)
 	{
-		setOfConfig[i].x = (rand() % WINDOW) - origin.x;
-		setOfConfig[i].y = (rand() % WINDOW) - origin.y;
+		// Sampling Strategy : Uniform Distribution
+		config_sample.x = (rand() % WINDOW) - origin.x;
+		config_sample.y = (rand() % WINDOW) - origin.y;
 		
-	  	if(gjk.checkCollision(setOfConfig[i], mobile, ob1) == COLLISION_FOUND)
+		// GJK Collision Detection
+		// config_sample is collision-free?
+	  	if(gjk.checkAllCollision(config_sample, mobile, obs, 4) == NO_COLLISION)
 	  	{
-	  		circle(
-	  			env_image,
-	  			cv::Point(setOfConfig[i].x + origin.x, setOfConfig[i].y + origin.y),
-	  			3,
-	  			cv::Scalar(0,0,255),
-	  			1
-	  		);
-	  	} 
-	  	else 
-	  	{
+	  		// Configuration is collision-free -> add to graph
+	  		conf_array[num_conf] = config_sample;
+	  		//update number of nodes
+	  		num_conf++;
+	  		// config.draw(NO_COLLISION);
 	  		circle(
 				env_image,
-				cv::Point(setOfConfig[i].x + origin.x, setOfConfig[i].y + origin.y),
+				cv::Point(config_sample.x + origin.x, config_sample.y + origin.y),
 				3,
 				cv::Scalar(204,204,204),
 				1
 			);
-	  	}
-	}
-	std::cout << "\tdone" << std::endl;
-	
-#if 0
-	// GJK Collision Detection
-  	std::cout << "\tGJK Collision Detection" << std::endl;
-  	
-  	std::vector<struct vec2_t> simplex_vertices;
-	struct vec2_t direction;
-  	enum gjkState result;
-  	int checkOb = 0;
-  	bool checkAllObstacle = false;
-  	Obstacle *obx;
-  	obx = (Obstacle *)malloc(sizeof(obx));
-  	
-  	std::cout << "&ob1 = " << &ob1 << std::endl;
-  	std::cout << "&ob2 = " << &ob2 << std::endl;
-  	std::cout << "&ob3 = " << &ob3 << std::endl;
-  	std::cout << "&ob4 = " << &ob4 << std::endl;
-  	
-  	for(int i=0; i < N_CONFIG; i++)
-  	{
-  		simplex_vertices.clear();
-	  	mobile.setPosition(setOfConfig[i]);
-	  	std::cout << "cicle = " << i << std::endl;
-	  	std::cout << "mobile position =[" << setOfConfig[i].x << ", " << setOfConfig[i].y << "]" << std::endl;
-	  	result = UPDATE_SIMPLEX;
-	  	checkOb = 0;
-	  	obx = &ob1;
-	  	checkAllObstacle = false;
-	  	
-	  	while(result == UPDATE_SIMPLEX)
-	  	{
-	  		result = updateSimplex(direction, &simplex_vertices, mobile, *obx);
-	  		if(result == NO_COLLISION && checkAllObstacle == false)
-	  		{
-	  			switch(checkOb)
-	  			{
-	  				case 0:	obx = &ob2; 
-	  							checkOb++; 
-	  							result = UPDATE_SIMPLEX;
-	  							simplex_vertices.clear(); 
-	  							break;
-	  							
-	  				case 1: 	obx = &ob3; 
-	  							checkOb++; 
-	  							result = UPDATE_SIMPLEX;
-	  							simplex_vertices.clear();
-	  							break;
-	  							
-	  				case 2: 	obx = &ob4; 
-	  							checkOb++; 
-	  							result = UPDATE_SIMPLEX;
-	  							simplex_vertices.clear(); 
-	  							break;
-	  							
-	  				case 3: 	obx = &ob1; 
-	  							checkOb = 0; 
-	  							result = NO_COLLISION; 
-	  							checkAllObstacle = true; 
-	  							break;
-	  			}
-	  		}
-	  		std::cout << "obx = " << obx << std::endl;
-	  	}
-	  	
-	  	std::cout << "result " << result << std::endl;
-	  	
-	  	if(result == COLLISION_FOUND)
-	  	{
-	  		std::cout << "Collision!" << std::endl;
-	  		circle(
-				env_image,
-				cv::Point(setOfConfig[i].x + origin.x, setOfConfig[i].y + origin.y),
-				3,
-				cv::Scalar(0,0,255),
-				1
-			);
 	  	} 
 	  	else 
 	  	{
-	  		std::cout << "NO Collision!" << std::endl;
+	  		// Configuration isn't collision-free -> NO add to graph
+	  		// config.draw(COLLISION);
+	  		circle(
+	  			env_image,
+	  			cv::Point(config_sample.x + origin.x, config_sample.y + origin.y),
+	  			3,
+	  			cv::Scalar(0,0,255),
+	  			1
+	  		);
 	  	}
-	  	std::cout << std::endl;
+	}
+  	
+  	std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
+  	for(int i=0; i<num_conf; i++)
+  	{
+  		std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
   	}
-#endif
+  	std::cout << "num_conf = " << num_conf << std::endl;
+  	// Create PRM Roadmap
+  	// Connection Strategy: kd-tree data structure
+  	//	->	kd-tree construction
+  	enum treeDirection dir = LEFT;
+  	struct kdTreeNode tree;
+  	struct kdTreeNode *treePointer;
+  	tree.axis = X;
+  	// search median
+  	
+  	int right = num_conf-1;
+  	
+  	
+  	tree.value = medianXAxis(conf_array, 0, num_conf-1);
+  	treePointer = &tree;
+  	std::cout << "treePointer->value = " << treePointer->value << std::endl;
+  	
+  	line(
+  		env_image,
+  		cv::Point(origin.x + treePointer->value, 0),
+  		cv::Point(origin.x + tree.value, WINDOW),
+  		cv::Scalar(0,255,0),
+  		1
+  	);
+  	
+  	std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
+  	for(int i=0; i<num_conf; i++)
+  	{
+  		std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
+  	}
+  	
+  	int cicle = 1;
+  	right = (num_conf-1)/2;
+  	while(right >= 1) // more than one point
+  	{
+  		treePointer->left = (kdTreeNode *)malloc(sizeof(struct kdTreeNode));
+	  	treePointer->left->parent = treePointer;
+	  	treePointer = treePointer->left;
+  		if(treePointer->parent->axis == X)
+  		{
+  			treePointer->axis = Y;
+  			treePointer->value = medianYAxis(conf_array, 0, right);
+  			std::cout << "treePointer->valueY = " << treePointer->value << std::endl;
+  			
+  			line(
+		  		env_image,
+		  		cv::Point(0, origin.y + treePointer->value),
+		  		cv::Point(origin.x + treePointer->parent->value, origin.y + treePointer->value),
+		  		cv::Scalar(0,255,0),
+		  		1
+  			);
+  		} 
+  		else
+  		{
+	  		treePointer->axis = X;
+  			treePointer->value = medianXAxis(conf_array, 0, right);
+  			std::cout << "treePointer->valueX = " << treePointer->value << std::endl;
+  			
+  			line(
+		  		env_image,
+		  		cv::Point(origin.x + treePointer->value, origin.y + treePointer->parent->value),
+		  		cv::Point(origin.x + treePointer->value, 0),
+		  		cv::Scalar(0,255,0),
+		  		1
+  			);
+  		}
+  		
+  		std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
+		for(int i=0; i<num_conf; i++)
+		{
+			std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
+		}
+  		cicle++;
+  		right = (num_conf-1)/pow(2, cicle);
+  	}
+  	std::cout << "pointLeft = [" << conf_array[right].x << ", " << conf_array[right].y << "]" << std::endl;
+  	
+  	
+  	/*std::cout << "treePointer(tree) = " << treePointer << std::endl;
+  	treePointer->left = (kdTreeNode *)malloc(sizeof(struct kdTreeNode));
+  	std::cout << "treePointer->left = " << treePointer->left << std::endl;
+  	treePointer->left->parent = treePointer;
+  	std::cout << "treePointer->left->parent = " << treePointer->parent << std::endl;
+  	treePointer = treePointer->left;
+  	std::cout << "treePointer = " << treePointer << std::endl;	
+  	
+  	treePointer->axis = Y;
+  	treePointer->value = medianYAxis(conf_array, 0, (num_conf-1)/2, (num_conf-1)/2-1);
+  	std::cout << "treePointer->value = " << treePointer->value << std::endl;
+  	
+  	line(
+  		env_image,
+  		cv::Point(0, origin.y + treePointer->value),
+  		cv::Point(origin.x + treePointer->parent->value, origin.y + treePointer->value),
+  		cv::Scalar(0,255,0),
+  		1
+  	);
+  	
+  	std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
+  	for(int i=0; i<num_conf; i++)
+  	{
+  		std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
+  	}
+  	
+  	treePointer->left = (kdTreeNode *)malloc(sizeof(struct kdTreeNode));
+  	treePointer->left->parent = treePointer;
+  	treePointer = treePointer->left;
+  	
+  	treePointer->axis = X;
+  	treePointer->value = medianXAxis(conf_array, 0, (num_conf-1)/4, (num_conf-1)/2-2);
+  	std::cout << "treePointer->value = " << treePointer->value << std::endl;
+  	
+  	line(
+  		env_image,
+  		cv::Point(origin.x + treePointer->value, origin.y + treePointer->parent->value),
+  		cv::Point(origin.x + treePointer->value, 0),
+  		cv::Scalar(0,255,0),
+  		1
+  	);*/
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -335,8 +406,6 @@ int main(int argc, char** argv)
 	std::cout << "Execution time: " << double(time_end - time_start) / double(CLOCKS_PER_SEC) << std::endl;
 	
 	waitKey( 0 );
-	
-	free(setOfConfig);
 	
 	/*while(true)
 	{ 	
@@ -365,146 +434,103 @@ int main(int argc, char** argv)
 	return(0);
 }
 
-#if 0
-struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj)
+float medianXAxis(struct vec2_t *array, int left, int right)
 {
-	return mobile.support(direction) - obj.support(direction*(-1));;
-}
-
-struct vec2_t getSupport(struct vec2_t direction, Obstacle ob1, Obstacle ob2)
-{
-	return ob1.support(direction) - ob2.support(direction*(-1));;
-}
-
-struct vec3_t vectorProduct(struct vec3_t a, struct vec3_t b)
-{
-	struct vec3_t result;
-	result.x = a.y * b.z - a.z * b.y;
-	result.y = - a.x * b.z + a.z * b.x;
-	result.z = a.x * b.y - a.y * b.x;
+	float result;
+	quicksortXaxis(array, left, right);
+	int med_index = (right-left+1)/2;
+	result = array[med_index].x;
+	if((right-left) % 2 != 0)
+	{
+		// even number of configuration
+		result = (array[med_index-1].x + array[med_index].x)/2;
+	}
 	return result;
 }
 
-struct vec2_t normalize(struct vec2_t vett)
+void quicksortXaxis(struct vec2_t *array, int l, int r)
 {
-	float mod = sqrt(pow(vett.x, 2) + pow(vett.y, 2));
-	return vec2_t(vett.x/mod, vett.y/mod);
-}
-
-struct vec3_t normalize(struct vec3_t vett)
-{
-	float mod = sqrt(pow(vett.x, 2) + pow(vett.y, 2) + pow(vett.z, 2));
-	return vec3_t(vett.x/mod, vett.y/mod, vett.z/mod);
-}
-
-float dotProduct(struct vec2_t v, struct vec2_t dir)
-{
-	return (v.x * dir.x + v.y * dir.y);
-}
-
-enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob)
-{
-	struct vec2_t a, v2_o, v2_v1, v2_v0, v2_v1_orth_2d, v2_v0_orth_2d;
-	struct vec3_t tmp, v2_v1_orth, v2_v0_orth;
-	float dot1, dot2;
-	
-	
-	std::cout << "simplex_vertices.size() = " << simplex_vertices[0].size() << std::endl;
-	switch(simplex_vertices[0].size())
+	if (r-l <= 0)
 	{
-		case 0:	direction = r.getPosition() - ob.getCentre();
-					std::cout << "case 0" << std::endl;
-					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
-					break;
-					
-		case 1:	direction = direction*(-1);
-					std::cout << "case 1" << std::endl;
-					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
-					break;
-					
-		case 2:	a = simplex_vertices[0].at(0) - simplex_vertices[0].at(1);
-  					tmp = vectorProduct(vec3_t(a.x, a.y, 0), vec3_t(-simplex_vertices[0].at(0).x, -simplex_vertices[0].at(0).y, 0));
-  					tmp = vectorProduct(tmp, vec3_t(a.x, a.y, 0));
-  					tmp = normalize(tmp);
-  					direction.x = tmp.x;
-  					direction.y = tmp.y;
-  					std::cout << "case 2" << std::endl;
-					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
-  					break;
-  		
-  		case 3:	v2_o = simplex_vertices[0].at(2)*(-1);								//v2 to the origin
-					v2_v1 = simplex_vertices[0].at(1) - simplex_vertices[0].at(2);	//v2 to v1
-					v2_v0 = simplex_vertices[0].at(0) - simplex_vertices[0].at(2); //v2 to v0
-					
-					v2_v1_orth = vectorProduct(vec3_t(v2_v0.x, v2_v0.y, 0), vec3_t(v2_v1.x, v2_v1.y, 0));
-					v2_v1_orth = normalize(v2_v1_orth);
-					v2_v1_orth = vectorProduct(v2_v1_orth, vec3_t(v2_v1.x, v2_v1.y, 0));
-					v2_v1_orth = normalize(v2_v1_orth);
-					
-					v2_v0_orth = vectorProduct(vec3_t(v2_v1.x, v2_v1.y, 0), vec3_t(v2_v0.x, v2_v0.y, 0));
-					v2_v0_orth = normalize(v2_v0_orth);
-					v2_v0_orth = vectorProduct(v2_v0_orth, vec3_t(v2_v0.x, v2_v0.y, 0));
-					v2_v0_orth = normalize(v2_v0_orth);
-					
-					v2_o = normalize(v2_o);
-					v2_v1_orth_2d = vec2_t(v2_v1_orth.x, v2_v1_orth.y);
-					v2_v0_orth_2d = vec2_t(v2_v0_orth.x, v2_v0_orth.y);
-					dot1 = dotProduct(v2_o, v2_v1_orth_2d);
-					dot2 = dotProduct(v2_o, v2_v0_orth_2d);
-					if(dot1 > 0)
-					{
-						// remove v0 -> reallocation (v1 become v0 & v2 become v1)
-						simplex_vertices[0].erase(simplex_vertices[0].begin());
-						direction = v2_v1_orth_2d;
-					}
-					else if(dot2 > 0)
-					{
-						// remove v1 -> reallocation (v2 become v1 & v0 remain v0)
-						simplex_vertices[0].erase(simplex_vertices[0].begin()+1);
-						direction = v2_v0_orth_2d;
-					}
-					else
-					{
-						return COLLISION_FOUND;
-					}
-					std::cout << "case 3" << std::endl;
-					std::cout << "dot1 = " << dot1 << std::endl;
-					std::cout << "dot2 = " << dot1 << std::endl;
-					std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
-					break;
-		
-		default:	std::cout << "Error: case dafault" << std::endl;
-					break;
+		return;
 	}
-	
-	return addSupport(direction, simplex_vertices, r, ob);
+	else
+	{
+		int i = partitionXAxis(array, l, r);
+		quicksortXaxis(array, l, i-1);
+		quicksortXaxis(array, i+1, r);
+	}
 }
 
-enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob)
+int partitionXAxis(struct vec2_t *array, int l, int r)
 {
-	enum gjkState result = UPDATE_SIMPLEX;
-	struct vec2_t newVertex;
-	float dot;
-	newVertex = getSupport(direction, r, ob);
-	simplex_vertices[0].push_back(newVertex);
-	dot = dotProduct(direction, normalize(newVertex));
-	if(dot < 0)
+	int i, pivot;
+	pivot = array[r].x;
+	i = l - 1;
+	for(int j = l; j <= r-1; j++)
 	{
-		result = NO_COLLISION;
+		if(array[j].x < pivot)
+		{
+			i++;
+			swap(array, i, j);
+		}
 	}
-	std::cout << "Add Support" << std::endl;
-	std::cout << "newVertex = ["<< newVertex.x << ", " << newVertex.y << "]" << std::endl;
-	std::cout << "simplex_vertices = { " << std::endl;
-	for(int i=0; i < simplex_vertices[0].size(); i++)
+	swap(array, i+1, r);
+	return i+1;
+}
+
+float medianYAxis(struct vec2_t *array, int left, int right)
+{
+	float result;
+	quicksortYaxis(array, left, right);
+	int med_index = (right-left+1)/2;
+	result = array[med_index].y;
+	if((right-left) % 2 != 0)
 	{
-		std::cout << "\t v"<< i << " = [" << simplex_vertices[0].at(i).x << ", " << simplex_vertices[0].at(i).y << "]" << std::endl;
+		// even number of configuration
+		result = (array[med_index-1].y + array[med_index].y)/2;
 	}
-	std::cout << "}" << std::endl;
-	std::cout << "simplex_vertices.size() = " << simplex_vertices[0].size() << std::endl;
-	std::cout << "dotProduct(direction, newVertex) = " << dot << std::endl;
 	return result;
 }
-#endif
+
+void quicksortYaxis(struct vec2_t *array, int l, int r)
+{
+	if (r-l <= 0)
+	{
+		return;
+	}
+	else
+	{
+		int i = partitionYAxis(array, l, r);
+		quicksortYaxis(array, l, i-1);
+		quicksortYaxis(array, i+1, r);
+	}
+}
+
+int partitionYAxis(struct vec2_t *array, int l, int r)
+{
+	int i, pivot;
+	pivot = array[r].y;
+	i = l - 1;
+	for(int j = l; j <= r-1; j++)
+	{
+		if(array[j].y < pivot)
+		{
+			i++;
+			swap(array, i, j);
+		}
+	}
+	swap(array, i+1, r);
+	return i+1;
+}
+
+void swap(struct vec2_t *array, int i, int j)
+{
+	struct vec2_t tmp;
+	tmp = array[i];
+	array[i] = array[j];
+	array[j] = tmp;
+}
 
 void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 {	
