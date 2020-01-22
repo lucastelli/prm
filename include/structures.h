@@ -114,5 +114,14 @@ struct kdTreeNode
 	struct vec2_t *point = NULL;
 };
 
-#endif
+/*------------------------//
+		k-d Tree node v 2.0
+//------------------------*/
 
+struct kd_node_t 
+{
+	float x[2];
+	struct kd_node_t *left, *right;
+};
+
+#endif

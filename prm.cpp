@@ -33,6 +33,9 @@
 #define N_CONFIG 		30 	// total configuration
 #define N_NEIGHBORS 	3
 
+// k-d Tree Parameters //
+#define MAX_DIM 2
+
 // Define drawing functions //
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
 cv::Point drawVector(cv::Mat img, struct vec2_t origin, double width, double angle, cv::Scalar color);
@@ -54,15 +57,14 @@ float dotProduct(struct vec2_t v, struct vec2_t dir);
 enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);
 enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);*/
 
-float medianXAxis(struct vec2_t *array, int left, int right);
-//void selectXAxis(struct vec2_t *array, int l, int r, int k);
-void quicksortXaxis(struct vec2_t *array, int l, int r);
-int partitionXAxis(struct vec2_t *array, int l, int r);
-float medianYAxis(struct vec2_t *array, int left, int right);
-//void selectYAxis(struct vec2_t *array, int l, int r, int k);
-void quicksortYaxis(struct vec2_t *array, int l, int r);
-int partitionYAxis(struct vec2_t *array, int l, int r);
-void swap(struct vec2_t *array, int i, int j);
+struct kd_node_t * make_tree(struct kd_node_t *t, int len, int i, int dim);
+struct kd_node_t * median(struct kd_node_t *start, struct kd_node_t *end, int idx);
+struct kd_node_t * select(struct kd_node_t *start, struct kd_node_t *end, struct kd_node_t *md, int idx);
+struct kd_node_t * partition(struct kd_node_t *start, struct kd_node_t *end, int idx);
+void swap(struct kd_node_t *a, struct kd_node_t *b);
+void nearest(struct kd_node_t *root, struct kd_node_t *nd, int i, int dim, 
+		struct kd_node_t **best, float *best_dist);
+float dist(struct kd_node_t *a, struct kd_node_t *b, int dim);
 
 // Define namespace //
 using namespace cv;
@@ -281,7 +283,12 @@ int main(int argc, char** argv)
   	tree.axis = X;
   	// search median
   	
-  	
+  	struct kd_node_t free_conf[num_conf];
+  	for(int i=0; i < num_conf; i++)
+  	{
+  		free_conf[i].x[0] = conf_array[i].x;
+  		free_conf[i].x[1] = conf_array[i].y;
+  	}
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -327,102 +334,105 @@ int main(int argc, char** argv)
 	return(0);
 }
 
-float medianXAxis(struct vec2_t *array, int left, int right)
+void nearest(struct kd_node_t *root, struct kd_node_t *nd, int i, int dim, 
+		struct kd_node_t **best, float *best_dist)
 {
-	float result;
-	quicksortXaxis(array, left, right);
-	int med_index = (right-left+1)/2;
-	result = array[med_index].x;
-	if((right-left) % 2 != 0)
+	float d, dx, dx2;
+	
+	if(!root) return;
+	d = dist(root, nd, dim);
+	dx = root->x[i] - nd->x[i];
+	dx2 = dx * dx;
+	
+	//visited++;
+	
+	if(!*best || d < *best_dist)
 	{
-		// even number of configuration
-		result = (array[med_index-1].x + array[med_index].x)/2;
+		*best_dist = d;
+		*best = root;
 	}
-	return result;
-}
-
-void quicksortXaxis(struct vec2_t *array, int l, int r)
-{
-	if (r-l <= 0)
-	{
+	
+	if(!*best_dist)
 		return;
-	}
-	else
-	{
-		int i = partitionXAxis(array, l, r);
-		quicksortXaxis(array, l, i-1);
-		quicksortXaxis(array, i+1, r);
-	}
+		
+	if(++i >= dim)
+		i = 0;
+		
+	nearest(dx > 0 ? root->left : root->right, nd, i, dim, best, best_dist);
+	
+	if(dx2 >= *best_dist)
+		return;
+		
+	nearest(dx > 0 ? root->right : root->left, nd, i, dim, best, best_dist);
 }
 
-int partitionXAxis(struct vec2_t *array, int l, int r)
+float dist(struct kd_node_t *a, struct kd_node_t *b, int dim)
 {
-	int i, pivot;
-	pivot = array[r].x;
-	i = l - 1;
-	for(int j = l; j <= r-1; j++)
+	float t, d = 0;
+	while(dim--)
 	{
-		if(array[j].x < pivot)
+		t = a->x[dim] - b->x[dim];
+		d += t * t;
+	}
+	return d;
+}
+
+struct kd_node_t * make_tree(struct kd_node_t *t, int len, int i, int dim)
+{
+	struct kd_node_t *n;	
+	
+	if(!len)
+		return 0;
+		
+	if((n = median(t, t + len, i)))
+	{
+		i = (i + 1) % dim;
+		n->left = make_tree(t, n - t, i, dim);
+		n->right = make_tree(n + 1, t + len - (n + 1), i, dim);
+	}
+	return n;
+}
+
+struct kd_node_t * median(struct kd_node_t *start, struct kd_node_t *end, int idx)
+{
+	return select(start, end, start + (end - start)/2, idx);
+}
+
+struct kd_node_t * select(struct kd_node_t *start, struct kd_node_t *end, struct kd_node_t *md, int idx)
+{
+	struct kd_node_t *store;
+	store = partition(start, end, idx);
+	if(store < md)
+		select(store, end, md, idx);
+	else if(store > md)
+		select(start, store, md, idx);
+	else
+		return store;
+}
+
+struct kd_node_t * partition(struct kd_node_t *start, struct kd_node_t *end, int idx)
+{		
+	float pivot = (end-1)->x[idx];
+	struct kd_node_t *p, *store;
+	for(store = p = start; p < end; p++)
+	{
+		if(p->x[idx] < pivot)
 		{
-			i++;
-			swap(array, i, j);
+			if(p != store)
+				swap(store, p);
+			store++;
 		}
 	}
-	swap(array, i+1, r);
-	return i+1;
+	swap(store, end-1);
+	return store;
 }
 
-float medianYAxis(struct vec2_t *array, int left, int right)
+void swap(struct kd_node_t *a, struct kd_node_t *b)
 {
-	float result;
-	quicksortYaxis(array, left, right);
-	int med_index = (right-left+1)/2;
-	result = array[med_index].y;
-	if((right-left) % 2 != 0)
-	{
-		// even number of configuration
-		result = (array[med_index-1].y + array[med_index].y)/2;
-	}
-	return result;
-}
-
-void quicksortYaxis(struct vec2_t *array, int l, int r)
-{
-	if (r-l <= 0)
-	{
-		return;
-	}
-	else
-	{
-		int i = partitionYAxis(array, l, r);
-		quicksortYaxis(array, l, i-1);
-		quicksortYaxis(array, i+1, r);
-	}
-}
-
-int partitionYAxis(struct vec2_t *array, int l, int r)
-{
-	int i, pivot;
-	pivot = array[r].y;
-	i = l - 1;
-	for(int j = l; j <= r-1; j++)
-	{
-		if(array[j].y < pivot)
-		{
-			i++;
-			swap(array, i, j);
-		}
-	}
-	swap(array, i+1, r);
-	return i+1;
-}
-
-void swap(struct vec2_t *array, int i, int j)
-{
-	struct vec2_t tmp;
-	tmp = array[i];
-	array[i] = array[j];
-	array[j] = tmp;
+	float tmp[MAX_DIM];
+	memcpy(tmp, a->x, sizeof(tmp));
+	memcpy(a->x, b->x, sizeof(tmp));
+	memcpy(b->x, tmp, sizeof(tmp));
 }
 
 void drawLabel(cv::Mat img, std::string label, cv::Point origin)
