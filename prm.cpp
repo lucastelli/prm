@@ -30,7 +30,7 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 		30 	// total configuration
+#define N_CONFIG 		50 	// total configuration
 #define N_NEIGHBORS 	3
 
 // k-d Tree Parameters //
@@ -270,25 +270,56 @@ int main(int argc, char** argv)
   	std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
   	for(int i=0; i<num_conf; i++)
   	{
-  		std::cout << "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
+  		std::cout << i <<" :"<< "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
   	}
   	std::cout << "num_conf = " << num_conf << std::endl;
   	
   	// Create PRM Roadmap
   	// Connection Strategy: kd-tree data structure
   	//	->	kd-tree construction
-  	enum treeDirection dir = LEFT;
+  	
+  	/*enum treeDirection dir = LEFT;
   	struct kdTreeNode tree;
   	struct kdTreeNode *treePointer;
-  	tree.axis = X;
-  	// search median
+  	tree.axis = X;*/
   	
+  	// make kd tree
   	struct kd_node_t free_conf[num_conf];
+  	struct kd_node_t *root, *pt;
+  	
   	for(int i=0; i < num_conf; i++)
   	{
   		free_conf[i].x[0] = conf_array[i].x;
   		free_conf[i].x[1] = conf_array[i].y;
   	}
+  	
+  	std::cout << "l = " << sizeof(free_conf)/sizeof(*free_conf) << std::endl;
+  	
+  	//root = make_tree(free_conf, sizeof(free_conf)/sizeof(*free_conf), 0, 2);
+  	
+  	// tree check
+  	#if 0
+  	printf("Left side:\n");
+	pt = root;
+	while(pt)
+	{
+		printf("%p -> ", pt);
+		printf("[%f, %f]\n", pt->x[0], pt->x[1]);
+		pt = pt->left;
+	}
+	printf("Right side:\n");
+	pt = root;
+	while(pt)
+	{
+		printf("%p -> ", pt);
+		printf("[%f, %f]\n", pt->x[0], pt->x[1]);
+		pt = pt->right;
+	}
+	printf("Right side & left side:\n");
+	pt = root->left->right;
+	printf("%p -> ", pt);
+	printf("[%f, %f]\n", pt->x[0], pt->x[1]);
+  	#endif
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -401,7 +432,18 @@ struct kd_node_t * median(struct kd_node_t *start, struct kd_node_t *end, int id
 struct kd_node_t * select(struct kd_node_t *start, struct kd_node_t *end, struct kd_node_t *md, int idx)
 {
 	struct kd_node_t *store;
+	
+	if(end <= start)
+		return NULL;
+		
+	if (end == start + 1)
+		return start;
+	
 	store = partition(start, end, idx);
+	
+	if(store->x[idx] == md->x[idx])
+		return md;
+	
 	if(store < md)
 		select(store, end, md, idx);
 	else if(store > md)
