@@ -30,7 +30,8 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 		100 	// total configuration
+#define N_CONFIG 		30 	// total configuration
+//#define RANGE		100
 #define N_NEIGHBORS 	3
 
 // k-d Tree Parameters //
@@ -57,14 +58,7 @@ float dotProduct(struct vec2_t v, struct vec2_t dir);
 enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);
 enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);*/
 
-struct kd_node_t * make_tree(struct kd_node_t *t, int len, int i, int dim);
-struct kd_node_t * median(struct kd_node_t *start, struct kd_node_t *end, int idx);
-struct kd_node_t * select(struct kd_node_t *start, struct kd_node_t *end, struct kd_node_t *md, int idx);
-struct kd_node_t * partition(struct kd_node_t *start, struct kd_node_t *end, int idx);
-void swap(struct kd_node_t *a, struct kd_node_t *b);
-void nearest(struct kd_node_t *root, struct kd_node_t *nd, int i, int dim, 
-		struct kd_node_t **best, float *best_dist);
-float dist(struct kd_node_t *a, struct kd_node_t *b, int dim);
+
 
 // Define namespace //
 using namespace cv;
@@ -213,15 +207,17 @@ int main(int argc, char** argv)
 	
 	std::cout << "--- PRM Algorithm (Mobile Robot Case) ---" << std::endl;
 	
-	GJKDetector gjk;					// GJK detector object
-	struct vec2_t config_sample;	// Configuration sampled by PRM sampling strategy
-	Obstacle *obs;						// Array of obstacles in the work-space
-	struct vec2_t *conf_array;		// Array of free-collision configurations
-	int num_conf = 0;					// number of free-collision configurations
-																
+	GJKDetector gjk;						// GJK detector object
+	struct vec2_t config_sample;		// Single configuration sampled by PRM sampling strategy
+	Obstacle *obs;							// Array of obstacles in the work-space
+	struct vec2_t *conf_array;			// Array of random configurations sampled by PRM sampling strategy
+	struct vec2_t *free_conf_array;	// Array of free-collision configurations after GJK Collision Detection
+	int num_conf = 0;						// number of free-collision configurations
+	
+	// initialization of random configurations array													
 	conf_array = (struct vec2_t *)calloc(N_CONFIG, sizeof(*conf_array));
 	
-	// Initialization array of obstacles
+	// initialization obstacles array
 	obs = (Obstacle *)calloc(4, sizeof(*obs));
 	obs[0] = ob1;
 	obs[1] = ob2;
@@ -233,8 +229,8 @@ int main(int argc, char** argv)
 	for(int i=0; i < N_CONFIG; i++)
 	{
 		// Sampling Strategy : Uniform Distribution
-		config_sample.x = (rand() % WINDOW) - origin.x;
-		config_sample.y = (rand() % WINDOW) - origin.y;
+		config_sample.x = rand()/((RAND_MAX + 1u)/WINDOW) - origin.x;
+		config_sample.y = rand()/((RAND_MAX + 1u)/WINDOW) - origin.y;
 		
 		// GJK Collision Detection
 		// config_sample is collision-free?
@@ -267,59 +263,32 @@ int main(int argc, char** argv)
 	  	}
 	}
   	
+  	#if 1
+  	// initialization array of free-collision configuration
+  	free_conf_array = (struct vec2_t *)calloc(num_conf, sizeof(*free_conf_array));
+  	
+  	// copy values
+  	for(int i=0; i<num_conf; i++)
+  	{
+  		free_conf_array[i] = conf_array[i];
+  	}
+  	
+  	// eliminate conf_array and free memory
+  	free(conf_array);
+  	
   	std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
   	for(int i=0; i<num_conf; i++)
   	{
-  		std::cout << i <<" :"<< "\t[" << conf_array[i].x <<", "<< conf_array[i].y << "]" << std::endl;
+  		std::cout << i <<" :"<< "\t[" << free_conf_array[i].x <<", "<< free_conf_array[i].y << "]" << std::endl;
   	}
   	std::cout << "num_conf = " << num_conf << std::endl;
+  	#endif
   	
   	// Create PRM Roadmap
   	// Connection Strategy: kd-tree data structure
   	//	->	kd-tree construction
   	
-  	/*enum treeDirection dir = LEFT;
-  	struct kdTreeNode tree;
-  	struct kdTreeNode *treePointer;
-  	tree.axis = X;*/
   	
-  	// make kd tree
-  	/*struct kd_node_t free_conf[num_conf];
-  	struct kd_node_t *root, *pt;
-  	
-  	for(int i=0; i < num_conf; i++)
-  	{
-  		free_conf[i].x[0] = conf_array[i].x;
-  		free_conf[i].x[1] = conf_array[i].y;
-  	}
-  	
-  	std::cout << "l = " << sizeof(free_conf)/sizeof(*free_conf) << std::endl;
-  	
-  	root = make_tree(free_conf, sizeof(free_conf)/sizeof(*free_conf), 0, 2);*/
-  	
-  	// tree check
-  	#if 0
-  	printf("Left side:\n");
-	pt = root;
-	while(pt)
-	{
-		printf("%p -> ", pt);
-		printf("[%f, %f]\n", pt->x[0], pt->x[1]);
-		pt = pt->left;
-	}
-	printf("Right side:\n");
-	pt = root;
-	while(pt)
-	{
-		printf("%p -> ", pt);
-		printf("[%f, %f]\n", pt->x[0], pt->x[1]);
-		pt = pt->right;
-	}
-	printf("Right side & left side:\n");
-	pt = root->left->right;
-	printf("%p -> ", pt);
-	printf("[%f, %f]\n", pt->x[0], pt->x[1]);
-  	#endif
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -365,117 +334,7 @@ int main(int argc, char** argv)
 	return(0);
 }
 
-void nearest(struct kd_node_t *root, struct kd_node_t *nd, int i, int dim, 
-		struct kd_node_t **best, float *best_dist)
-{
-	float d, dx, dx2;
-	
-	if(!root) return;
-	d = dist(root, nd, dim);
-	dx = root->x[i] - nd->x[i];
-	dx2 = dx * dx;
-	
-	//visited++;
-	
-	if(!*best || d < *best_dist)
-	{
-		*best_dist = d;
-		*best = root;
-	}
-	
-	if(!*best_dist)
-		return;
-		
-	if(++i >= dim)
-		i = 0;
-		
-	nearest(dx > 0 ? root->left : root->right, nd, i, dim, best, best_dist);
-	
-	if(dx2 >= *best_dist)
-		return;
-		
-	nearest(dx > 0 ? root->right : root->left, nd, i, dim, best, best_dist);
-}
 
-float dist(struct kd_node_t *a, struct kd_node_t *b, int dim)
-{
-	float t, d = 0;
-	while(dim--)
-	{
-		t = a->x[dim] - b->x[dim];
-		d += t * t;
-	}
-	return d;
-}
-
-struct kd_node_t * make_tree(struct kd_node_t *t, int len, int i, int dim)
-{
-	struct kd_node_t *n;	
-	
-	if(!len)
-		return 0;
-		
-	if((n = median(t, t + len, i)))
-	{
-		i = (i + 1) % dim;
-		n->left = make_tree(t, n - t, i, dim);
-		n->right = make_tree(n + 1, t + len - (n + 1), i, dim);
-	}
-	return n;
-}
-
-struct kd_node_t * median(struct kd_node_t *start, struct kd_node_t *end, int idx)
-{
-	return select(start, end, start + (end - start)/2, idx);
-}
-
-struct kd_node_t * select(struct kd_node_t *start, struct kd_node_t *end, struct kd_node_t *md, int idx)
-{
-	struct kd_node_t *store;
-	
-	if(end <= start)
-		return NULL;
-		
-	if (end == start + 1)
-		return start;
-	
-	store = partition(start, end, idx);
-	
-	if(store->x[idx] == md->x[idx])
-		return md;
-	
-	if(store < md)
-		select(store, end, md, idx);
-	else if(store > md)
-		select(start, store, md, idx);
-	else
-		return store;
-}
-
-struct kd_node_t * partition(struct kd_node_t *start, struct kd_node_t *end, int idx)
-{		
-	float pivot = (end-1)->x[idx];
-	struct kd_node_t *p, *store;
-	for(store = p = start; p < end; p++)
-	{
-		if(p->x[idx] < pivot)
-		{
-			if(p != store)
-				swap(store, p);
-			store++;
-		}
-	}
-	swap(store, end-1);
-	return store;
-}
-
-void swap(struct kd_node_t *a, struct kd_node_t *b)
-{
-	float tmp[MAX_DIM];
-	memcpy(tmp, a->x, sizeof(tmp));
-	memcpy(a->x, b->x, sizeof(tmp));
-	memcpy(b->x, tmp, sizeof(tmp));
-}
 
 void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 {	

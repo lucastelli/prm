@@ -54,19 +54,11 @@ cmath
 structures.h
 ../include/structures.h
 
-/home/luca/software/projectACA/project/class/MobileRobot.cpp
-mobilerobot.h
-/home/luca/software/projectACA/project/class/mobilerobot.h
-
 /home/luca/software/projectACA/project/class/gjkdetector.cpp
 gjkdetector.h
 /home/luca/software/projectACA/project/class/gjkdetector.h
 vector.cpp
 /home/luca/software/projectACA/project/class/vector.cpp
-
-/home/luca/software/projectACA/project/class/obstacle.cpp
-obstacle.h
-/home/luca/software/projectACA/project/class/obstacle.h
 
 /usr/local/include/opencv4/opencv2/calib3d.hpp
 opencv2/core.hpp
