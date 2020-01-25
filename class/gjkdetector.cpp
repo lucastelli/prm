@@ -5,18 +5,15 @@ GJKDetector::GJKDetector()
 {
 	direction = {0, 0};
 	result = UPDATE_SIMPLEX;
-	//checkOb = 0;
-	//checkAllObstacle = false;
 	std::vector<struct vec2_t> simplex_vertices;
 }
 
-enum gjkState GJKDetector::checkAllCollision(struct vec2_t config, MobileRobot mobile, Obstacle *obx, int num_obs)
+enum gjkState GJKDetector::checkAllCollision(struct vec2_t *config, MobileRobot *mobile, Obstacle **obx, int num_obs)
 {
 	enum gjkState result;
 	for(int i=0; i < num_obs; i++)
 	{
-		Obstacle obj = obx[i];
-		result = checkCollision(config, mobile, obj);
+		result = checkCollision(config, mobile, obx[i]);
 		if(result == COLLISION_FOUND)
 		{
 			return COLLISION_FOUND;
@@ -25,20 +22,19 @@ enum gjkState GJKDetector::checkAllCollision(struct vec2_t config, MobileRobot m
 	return result;
 }
 
-enum gjkState GJKDetector::checkCollision(struct vec2_t config, MobileRobot mobile, Obstacle obx)
+enum gjkState GJKDetector::checkCollision(struct vec2_t *config, MobileRobot *mobile, Obstacle *obx)
 {
 	simplex_vertices.clear();
-  	mobile.setPosition(config);
+  	mobile->setPosition(*config);
   	result = UPDATE_SIMPLEX;
   	while(result == UPDATE_SIMPLEX)
   	{
-  		//result = updateSimplex(direction, &simplex_vertices, mobile, obx);
-  		result = updateSimplex(mobile, obx);											//
+  		result = updateSimplex(mobile, obx);
 	}	
 	return result;
 }
 
-enum gjkState GJKDetector::updateSimplex(/*struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices,*/ MobileRobot r, Obstacle ob)
+enum gjkState GJKDetector::updateSimplex(MobileRobot *r, Obstacle *ob)
 {
 	struct vec2_t a, v2_o, v2_v1, v2_v0, v2_v1_orth_2d, v2_v0_orth_2d;
 	struct vec3_t tmp, v2_v1_orth, v2_v0_orth, a_3d, v0_0_3d, v2_v0_3d, v2_v1_3d;
@@ -48,7 +44,7 @@ enum gjkState GJKDetector::updateSimplex(/*struct vec2_t &direction, std::vector
 	//std::cout << "simplex_vertices.size() = " << simplex_vertices.size() << std::endl;//
 	switch(simplex_vertices.size())
 	{
-		case 0:	direction = r.getPosition() - ob.getCentre();
+		case 0:	direction = r->getPosition() - ob->getCentre();
 					//std::cout << "case 0" << std::endl;
 					//std::cout << "direction = ["<< direction.x << ", " << direction.y << "]" << std::endl;
 					break;
@@ -84,16 +80,11 @@ enum gjkState GJKDetector::updateSimplex(/*struct vec2_t &direction, std::vector
 					v2_v1_3d = vec3_t(v2_v1.x, v2_v1.y, 0);
 					
 					v2_v1_orth = vectorProduct(&v2_v0_3d, &v2_v1_3d);
-					//v2_v1_orth = normalize(v2_v1_orth);
 					v2_v1_orth = vectorProduct(&v2_v1_orth, &v2_v1_3d);
-					//v2_v1_orth = normalize(v2_v1_orth);
 					
 					v2_v0_orth = vectorProduct(&v2_v1_3d, &v2_v0_3d);
-					//v2_v0_orth = normalize(v2_v0_orth);
 					v2_v0_orth = vectorProduct(&v2_v0_orth, &v2_v0_3d);
-					//v2_v0_orth = normalize(v2_v0_orth);
 					
-					//v2_o = normalize(v2_o);
 					v2_v1_orth_2d = vec2_t(v2_v1_orth.x, v2_v1_orth.y);
 					v2_v0_orth_2d = vec2_t(v2_v0_orth.x, v2_v0_orth.y);
 					dot1 = dotProduct(v2_o, v2_v1_orth_2d);
@@ -124,18 +115,17 @@ enum gjkState GJKDetector::updateSimplex(/*struct vec2_t &direction, std::vector
 					break;
 	}
 	
-	//return addSupport(direction, simplex_vertices, r, ob);	//
 	return addSupport(r, ob);
 }
 
-enum gjkState GJKDetector::addSupport(/*struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices,*/ MobileRobot r, Obstacle ob)
+enum gjkState GJKDetector::addSupport(MobileRobot *r, Obstacle *ob)
 {
 	enum gjkState result = UPDATE_SIMPLEX;
 	struct vec2_t newVertex;
 	double dot;
 	newVertex = getSupport(direction, r, ob);
 	simplex_vertices.push_back(newVertex);
-	dot = dotProduct(direction, newVertex/*normalize(newVertex)*/);
+	dot = dotProduct(direction, newVertex);
 	if(dot < 0)
 	{
 		result = NO_COLLISION;
@@ -153,13 +143,8 @@ enum gjkState GJKDetector::addSupport(/*struct vec2_t direction, std::vector<str
 	return result;
 }
 
-struct vec2_t GJKDetector::getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj)
+struct vec2_t GJKDetector::getSupport(struct vec2_t direction, MobileRobot *mobile, Obstacle *obj)
 {
-	return mobile.support(direction) - obj.support(direction*(-1));;
-}
-
-/*struct vec2_t getSupport(struct vec2_t direction, Obstacle ob1, Obstacle ob2)
-{
-	return ob1.support(direction) - ob2.support(direction*(-1));;
-}*/ 	
+	return mobile->support(direction) - obj->support(direction*(-1));;
+}	
   	

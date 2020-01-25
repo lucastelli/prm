@@ -30,7 +30,7 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 		30 	// total configuration
+#define N_CONFIG 		30	// total configuration
 //#define RANGE		100
 #define N_NEIGHBORS 	3
 
@@ -209,7 +209,7 @@ int main(int argc, char** argv)
 	
 	GJKDetector gjk;						// GJK detector object
 	struct vec2_t config_sample;		// Single configuration sampled by PRM sampling strategy
-	Obstacle *obs;							// Array of obstacles in the work-space
+	Obstacle **obs;						// Array of obstacles in the work-space
 	struct vec2_t *conf_array;			// Array of random configurations sampled by PRM sampling strategy
 	struct vec2_t *free_conf_array;	// Array of free-collision configurations after GJK Collision Detection
 	int num_conf = 0;						// number of free-collision configurations
@@ -218,11 +218,11 @@ int main(int argc, char** argv)
 	conf_array = (struct vec2_t *)calloc(N_CONFIG, sizeof(*conf_array));
 	
 	// initialization obstacles array
-	obs = (Obstacle *)calloc(4, sizeof(*obs));
-	obs[0] = ob1;
-	obs[1] = ob2;
-	obs[2] = ob3;
-	obs[3] = ob4;
+	obs = (Obstacle **)calloc(4, sizeof(*obs));
+	obs[0] = &ob1;
+	obs[1] = &ob2;
+	obs[2] = &ob3;
+	obs[3] = &ob4;
 	
 	std::cout << "Initialization of PRM graph" << std::endl;
 	// Initialization of PRM graph
@@ -234,7 +234,7 @@ int main(int argc, char** argv)
 		
 		// GJK Collision Detection
 		// config_sample is collision-free?
-	  	if(gjk.checkAllCollision(config_sample, mobile, obs, 4) == NO_COLLISION)
+	  	if(gjk.checkAllCollision(&config_sample, &mobile, obs, 4) == NO_COLLISION)
 	  	{
 	  		// Configuration is collision-free -> add to graph
 	  		conf_array[num_conf] = config_sample;
