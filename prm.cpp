@@ -30,7 +30,7 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 		50 	// total configuration
+#define N_CONFIG 		100 	// total configuration
 #define N_NEIGHBORS 	3
 
 // k-d Tree Parameters //
@@ -222,7 +222,7 @@ int main(int argc, char** argv)
 	conf_array = (struct vec2_t *)calloc(N_CONFIG, sizeof(*conf_array));
 	
 	// Initialization array of obstacles
-	obs = (Obstacle *)malloc(4*sizeof(*obs));
+	obs = (Obstacle *)calloc(4, sizeof(*obs));
 	obs[0] = ob1;
 	obs[1] = ob2;
 	obs[2] = ob3;
@@ -284,7 +284,7 @@ int main(int argc, char** argv)
   	tree.axis = X;*/
   	
   	// make kd tree
-  	struct kd_node_t free_conf[num_conf];
+  	/*struct kd_node_t free_conf[num_conf];
   	struct kd_node_t *root, *pt;
   	
   	for(int i=0; i < num_conf; i++)
@@ -295,7 +295,7 @@ int main(int argc, char** argv)
   	
   	std::cout << "l = " << sizeof(free_conf)/sizeof(*free_conf) << std::endl;
   	
-  	//root = make_tree(free_conf, sizeof(free_conf)/sizeof(*free_conf), 0, 2);
+  	root = make_tree(free_conf, sizeof(free_conf)/sizeof(*free_conf), 0, 2);*/
   	
   	// tree check
   	#if 0

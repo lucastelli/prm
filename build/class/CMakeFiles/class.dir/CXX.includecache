@@ -9,6 +9,8 @@
 ../functions/vector.cpp
 vector.h
 ../functions/vector.h
+iostream
+-
 
 ../include/gjkdetector.h
 iostream

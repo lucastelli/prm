@@ -44,12 +44,12 @@ struct vec2_t
 //------------------------*/
 struct vec3_t
 {
-	float x;
-	float y;
-	float z;
+	double x;
+	double y;
+	double z;
 	
 	//default + constructor
-	vec3_t(float x=0, float y=0, float z=0) : x(x), y(y), z(z) {}
+	vec3_t(double x=0, double y=0, double z=0) : x(x), y(y), z(z) {}
 	
 	//assignment operator
 	vec3_t& operator=(const vec3_t& a)
