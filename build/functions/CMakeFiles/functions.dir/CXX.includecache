@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/structures.h
+
+../include/vector.h
+vector
+-
+cmath
+-
+structures.h
+../include/structures.h
+
+/home/luca/software/projectACA/project/functions/vector.cpp
+vector.h
+/home/luca/software/projectACA/project/functions/vector.h
+iostream
+-
+

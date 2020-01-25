@@ -1,0 +1,2 @@
+/usr/bin/ar qc libfunctions.a  CMakeFiles/functions.dir/vector.cpp.o
+/usr/bin/ranlib libfunctions.a
