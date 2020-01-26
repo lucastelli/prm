@@ -34,31 +34,26 @@
 //#define RANGE		100
 #define N_NEIGHBORS 	3
 
-// k-d Tree Parameters //
+// k-d Tree parameters and functions//
 #define MAX_DIM 2
+
+int n_index = 0;		//global variable -> index of neighbors array
+int n_max = 0;			//global variable -> index of farther neighbors in the neighbors array
+
+void swap(struct kd_node_t *a, struct kd_node_t *b);
+struct kd_node_t * partition(struct kd_node_t *array_s, struct kd_node_t *array_e, int axis);
+struct kd_node_t * median(struct kd_node_t *array_s, struct kd_node_t *array_e, int axis);
+struct kd_node_t * kdtree_make(struct kd_node_t *array_s, struct kd_node_t *array_e, int axis);
+void kdtree_stamp(struct kd_node_t *root);
+float dist(struct kd_node_t *node_a, struct kd_node_t *node_b);
+void kdtree_nearest(struct kd_node_t *root, struct kd_node_t *query, struct kd_node_t **best_near, float *distance, int index);
+void kdtree_neighbors(struct kd_node_t *root, struct kd_node_t *query, struct kd_node_t **best_near, float *distance, int index,
+								struct kd_node_t **neighbors, float dist_neighbors, float *local_max_distance);
 
 // Define drawing functions //
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
 cv::Point drawVector(cv::Mat img, struct vec2_t origin, double width, double angle, cv::Scalar color);
 void drawLabel(cv::Mat img, std::string label, cv::Point origin);
-
-//Define function gjk v2.0 //
-/*enum gjkState{
-  		UPDATE_SIMPLEX,
-  		NO_COLLISION,
-  		COLLISION_FOUND
-  	};
-struct vec2_t getSupport(struct vec2_t direction, MobileRobot mobile, Obstacle obj);
-struct vec2_t getSupport(struct vec2_t direction, Obstacle ob1, Obstacle ob2);
-bool search(struct vec2_t *vett, struct vec2_t pt, int num);
-struct vec3_t vectorProduct(struct vec3_t a, struct vec3_t b);
-struct vec2_t normalize(struct vec2_t vett);
-struct vec3_t normalize(struct vec3_t vett);
-float dotProduct(struct vec2_t v, struct vec2_t dir);
-enum gjkState updateSimplex(struct vec2_t &direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);
-enum gjkState addSupport(struct vec2_t direction, std::vector<struct vec2_t> *simplex_vertices, MobileRobot r, Obstacle ob);*/
-
-
 
 // Define namespace //
 using namespace cv;
@@ -276,7 +271,7 @@ int main(int argc, char** argv)
   	// eliminate conf_array and free memory
   	free(conf_array);
   	
-  	std::cout << "ARRAY OF FREE-COLLISION CONF :" << std::endl;
+  	std::cout << "ARRAY OF FREE-COLLISION CONFIGURATION :" << std::endl;
   	for(int i=0; i<num_conf; i++)
   	{
   		std::cout << i <<" :"<< "\t[" << free_conf_array[i].x <<", "<< free_conf_array[i].y << "]" << std::endl;
@@ -288,7 +283,185 @@ int main(int argc, char** argv)
   	// Connection Strategy: kd-tree data structure
   	//	->	kd-tree construction
   	
+  	struct kd_node_t nodes[num_conf];
+  	// create node for all free-collision configurations
+  	for(int i=0; i < num_conf; i++)
+  	{
+  		nodes[i].x[0] = free_conf_array[i].x;
+  		nodes[i].x[1] = free_conf_array[i].y;
+  	}
   	
+  	struct kd_node_t *root;
+	printf("KD TREE CREATE\n");
+	root = kdtree_make(nodes, nodes + num_conf, 0);
+	kdtree_stamp(root);
+	
+  	struct kd_node_t **nearest;
+	nearest = (struct kd_node_t **)calloc(1, sizeof(*nearest));
+	struct kd_node_t **neighbors;
+	
+	float dist_neigh = 200;
+	float dist = INFINITY;
+	float local_distance = 0;
+	struct kd_node_t test = {{31, 23}};
+	struct kd_node_t point;
+	
+	/*point.x[0] = free_conf_array[0].x;
+	point.x[1] = free_conf_array[0].y;
+	
+	printf("-------START TO CONNECT------------\n");
+	printf(
+		"point [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+		&point,
+		point.x[0],
+		point.x[1],
+		point.left,
+		point.right
+	);
+	
+	kdtree_neighbors(root, &point, nearest, &dist, 0, neighbors, dist_neigh);
+	for(int i=0; i < N_NEIGHBORS; i++)
+		{
+			if(neighbors[i])
+			{
+				printf(
+					"neigh [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+					neighbors[i],
+					(neighbors[i]) ? neighbors[i]->x[0] : 0,
+					(neighbors[i]) ? neighbors[i]->x[1] : 0,
+					neighbors[i]->left,
+					neighbors[i]->right
+				);
+			}
+		}*/
+	
+	for(int i=0; i < num_conf; i++)
+	{
+		point.x[0] = free_conf_array[i].x;
+		point.x[1] = free_conf_array[i].y;
+		dist = INFINITY;
+		n_index = 0;
+		local_distance = 0;
+		n_max = 0;
+		neighbors = (struct kd_node_t **)calloc(N_NEIGHBORS, sizeof(*neighbors));
+		
+		printf("-------START TO CONNECT------------\n");
+		printf(
+			"point [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+			&point,
+			point.x[0],
+			point.x[1],
+			point.left,
+			point.right
+		);
+		/*circle(
+			env_image,
+			cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
+			dist_neigh,
+			cv::Scalar(255,0,0),
+			1
+		);*/
+		kdtree_neighbors(root, &point, nearest, &dist, 0, neighbors, dist_neigh, &local_distance);
+		for(int j=0; j < N_NEIGHBORS; j++)
+		{
+			if(neighbors[j])
+			{
+				printf(
+					"neigh [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+					neighbors[j],
+					(neighbors[j]) ? neighbors[j]->x[0] : 0,
+					(neighbors[j]) ? neighbors[j]->x[1] : 0,
+					neighbors[j]->left,
+					neighbors[j]->right
+				);
+				line(
+					env_image,
+					cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
+					cv::Point(neighbors[j]->x[0]+origin.x, neighbors[j]->x[1]+origin.y),
+					cv::Scalar(128,128,128),
+					1
+				);
+			}
+		}
+		
+		free(neighbors);
+	}
+	
+	#if 0
+	point = &nodes[5];
+	
+	printf("------------------------------\n");
+	printf(
+			"point [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+			point,
+			(point) ? point->x[0] : 0,
+			(point) ? point->x[1] : 0,
+			point->left,
+			point->right
+		);
+		
+	circle(
+		env_image,
+		cv::Point(point->x[0]+origin.x, point->x[1]+origin.y),
+		dist_neigh,
+		cv::Scalar(255,0,0),
+		1
+	);
+	
+	kdtree_neighbors(root, point, nearest, &dist, 0, neighbors, dist_neigh);
+	printf("-------- NEIGHBORS ---------\n");
+	for(int i=0; i<N_NEIGHBORS; i++)
+	{
+		if(neighbors[i])
+			printf(
+				"node [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+				neighbors[i],
+				(neighbors[i]) ? neighbors[i]->x[0] : 0,
+				(neighbors[i]) ? neighbors[i]->x[1] : 0,
+				neighbors[i]->left,
+				neighbors[i]->right
+			);
+	}
+	
+	for(int i=0; i < N_NEIGHBORS; i++)
+	{
+		line(
+			env_image,
+			cv::Point(point->x[0]+origin.x, point->x[1]+origin.y),
+			cv::Point(neighbors[i]->x[0]+origin.x, neighbors[i]->x[1]+origin.y),
+			cv::Scalar(128,128,128),
+			1
+		);
+	}
+	#endif
+	
+	#if 0
+	kdtree_nearest(root, &test, nearest, &dist, 0);
+	printf("The point near [%f, %f] is [%f, %f] at distance %f\n", test.x[0], test.x[1], nearest[0]->x[0], nearest[0]->x[1], dist);
+	printf(
+			"node [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+			nearest[0],
+			(nearest[0]) ? nearest[0]->x[0] : 0,
+			(nearest[0]) ? nearest[0]->x[1] : 0,
+			nearest[0]->left,
+			nearest[0]->right
+		);
+	
+	kdtree_neighbors(root, &test, nearest, &dist, 0, neighbors, dist_neigh);
+	printf("\nThe neighbors near [%f, %f] are\n", test.x[0], test.x[1]);
+	for(int i=0; i<N_NEIGHBORS; i++)
+	{
+		if(neighbors[i])
+			printf(
+				"node [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+				neighbors[i],
+				(neighbors[i]) ? neighbors[i]->x[0] : 0,
+				(neighbors[i]) ? neighbors[i]->x[1] : 0,
+				neighbors[i]->left,
+				neighbors[i]->right
+			);
+	}
+	#endif
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -334,7 +507,295 @@ int main(int argc, char** argv)
 	return(0);
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+void swap(struct kd_node_t *a, struct kd_node_t *b)
+{
+	int tmp[MAX_DIM];
+	memcpy(tmp, a->x, sizeof(tmp));
+	memcpy(a->x, b->x, sizeof(tmp));
+	memcpy(b->x, tmp, sizeof(tmp));
+}
+
+struct kd_node_t * partition(struct kd_node_t *array_s, struct kd_node_t *array_e, int axis)
+{
+	struct kd_node_t *p, *store;
+	int pivot = (array_e - 1)->x[axis]; // pick the coordinate of array's last node as pivot
+	p = array_s;
+	store = array_s;
+	if(array_s == array_e)	//array compose by single element (leaf case of kd-tree)
+	{
+		return array_s;
+	}
+	if(array_e < array_s)
+	{
+		return NULL;
+	}
+	while(p < (array_e-1))
+	{
+		if(p->x[axis] < pivot)
+		{
+			if(p != store)
+			{
+				swap(p, store);
+			}
+			store++;
+		}
+		p++;
+	}
+	if(store != (array_e - 1))
+		swap(store, (array_e - 1));
+	return store;
+}
+
+struct kd_node_t * median(struct kd_node_t *array_s, struct kd_node_t *array_e, int axis)
+{
+	struct kd_node_t *part, *md, *start, *end;
+	part = NULL;									// result of partition function
+	start = array_s;								// left limit of array (change during the cycle)
+	end = array_e;									// right limit of array (change during the cycle)
+	md = array_s + (array_e - array_s)/2;	// pointer of array's median
+	
+	if(array_e <= array_s)	//array compose by single element (leaf case of kd-tree)
+	{
+		return NULL;
+	}
+	while(1)
+	{
+		part = partition(start, end, axis);
+		if(part < md)
+		{
+			// update right limit of array
+			start = part + 1;
+		}
+		else if(part > md)
+		{
+			// update left limit of array
+			end = part;
+		}
+		else
+		{
+			// part == md -> return median
+			return part;
+		}
+	}
+	return part;
+}
+
+struct kd_node_t * kdtree_make(struct kd_node_t *array_s, struct kd_node_t *array_e, int axis)
+{
+	struct kd_node_t *node;
+	int axis_update;
+	
+	if((node = median(array_s, array_e, axis)))
+	{
+		axis_update = (axis + 1) % MAX_DIM;
+		node->left = kdtree_make(array_s, node, axis_update);
+		node->right = kdtree_make(node + 1, array_e, axis_update);
+	}
+		
+	return node;
+}
+
+void kdtree_stamp(struct kd_node_t *root)
+{
+	if(root)
+	{
+		printf(
+			"node [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
+			root,
+			(root) ? root->x[0] : 0,
+			(root) ? root->x[1] : 0,
+			root->left,
+			root->right
+		);
+		if(root->left)
+			kdtree_stamp(root->left);
+		if(root->right)
+			kdtree_stamp(root->right);
+	}
+}
+
+float dist(struct kd_node_t *node_a, struct kd_node_t *node_b)
+{
+	float x, y;
+	x = node_a->x[0] - node_b->x[0];
+	y = node_a->x[1] - node_b->x[1];
+	return sqrt(x*x + y*y);
+}
+
+void kdtree_nearest(struct kd_node_t *root, struct kd_node_t *query, struct kd_node_t **best_near, float *distance, int index)
+{
+	float d;
+	
+	if(!root)
+	{
+		return;
+	}
+	
+	d = dist(root, query);
+	
+	if(d < *distance)
+	{
+		*distance = d; // the best short distance in distance pointer
+		*best_near = root;	// the nearest node
+	}
+	
+	if(!*distance)
+	{
+		// query == root
+		return;
+	}
+	
+	if(query->x[index] < root->x[index])
+	{
+		// search first left
+		if(root->left)
+		{
+			kdtree_nearest(root->left, query, best_near, distance, (index+1) % MAX_DIM);
+		}
+	}
+	else
+	{
+		// search first right
+		if(root->right)
+		{
+			kdtree_nearest(root->right, query, best_near, distance, (index+1) % MAX_DIM);
+		}
+	}
+	
+	if(abs(root->x[index] - query->x[index]) >= *distance)
+	{
+		return;
+	}
+	
+	if(query->x[index] < root->x[index])
+	{
+		// search also right
+		if(root->right)
+		{
+			kdtree_nearest(root->right, query, best_near, distance, (index+1) % MAX_DIM);
+		}
+	}
+	else
+	{
+		// search also left
+		if(root->left)
+		{
+			kdtree_nearest(root->left, query, best_near, distance, (index+1) % MAX_DIM);
+		}
+	}
+}
+
+int get_max(struct kd_node_t *query, struct kd_node_t **neighbors, float *local_max_distance)
+{
+	int idx_max = 0;
+	float max_dist = 0;
+	float d;
+	for(int i=0; i < N_NEIGHBORS; i++)
+	{
+		d = dist(query, neighbors[i]);
+		if(d > max_dist)
+		{
+			max_dist = d;
+			idx_max = i;
+		}
+	}
+	*local_max_distance = max_dist;
+	return idx_max;
+}
+
+void kdtree_neighbors(struct kd_node_t *root, struct kd_node_t *query, struct kd_node_t **best_near, float *distance, int index,
+								struct kd_node_t **neighbors, float dist_neighbors, float *local_max_distance)
+{
+	float d;
+	
+	if(!root)
+	{
+		return;
+	}
+	
+	d = dist(root, query);
+	
+	if((d <= dist_neighbors) && (d != 0))
+	{
+		if(n_index < N_NEIGHBORS)
+		{
+			neighbors[n_index] = root;
+			if(d > *local_max_distance)
+			{
+				*local_max_distance = d;
+				n_max = n_index;
+			}
+			n_index++;
+		}
+		else
+		{
+			if(d < *local_max_distance)
+			{
+				neighbors[n_max] = root;
+				n_max = get_max(query, neighbors, local_max_distance);
+			}
+		}
+		// this node probably isn't the nearest one but respect distance neighbors criteria
+		// so I insert it in the array of pointers of neighbors
+		/*if(d <= *local_max_distance)
+		{
+			neighbors[n_index] = root;
+			*local_max_distance = d;
+			n_index = (n_index + 1) % N_NEIGHBORS;
+		}*/
+		
+	}
+	
+	if((d < *distance) && (d != 0))
+	{
+		*distance = d; // the best short distance in distance pointer
+		*best_near = root;	// the nearest node
+	}
+	
+	if(query->x[index] < root->x[index])
+	{
+		// search first left
+		if(root->left)
+		{
+			kdtree_neighbors(root->left, query, best_near, distance, (index+1) % MAX_DIM, neighbors, dist_neighbors, local_max_distance);
+		}
+	}
+	else
+	{
+		// search first right
+		if(root->right)
+		{
+			kdtree_neighbors(root->right, query, best_near, distance, (index+1) % MAX_DIM, neighbors, dist_neighbors, local_max_distance);
+		}
+	}
+	
+	if(abs(root->x[index] - query->x[index]) >= dist_neighbors)
+	{
+		return;
+	}
+	
+	if(query->x[index] < root->x[index])
+	{
+		// search also right
+		if(root->right)
+		{
+			kdtree_neighbors(root->right, query, best_near, distance, (index+1) % MAX_DIM, neighbors, dist_neighbors, local_max_distance);
+		}
+	}
+	else
+	{
+		// search also left
+		if(root->left)
+		{
+			kdtree_neighbors(root->left, query, best_near, distance, (index+1) % MAX_DIM, neighbors, dist_neighbors, local_max_distance);
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void drawLabel(cv::Mat img, std::string label, cv::Point origin)
 {	
