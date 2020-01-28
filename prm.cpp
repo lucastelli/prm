@@ -30,7 +30,7 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 		30	// total configuration
+#define N_CONFIG 		10	// total configuration
 //#define RANGE		100
 #define N_NEIGHBORS 	3
 
@@ -38,8 +38,9 @@
 #define MAX_DIM 2
 
 int n_index = 0;		//global variable -> index of neighbors array
-int n_max = 0;			//global variable -> index of farther neighbors in the neighbors array
+int n_max = 0;			//global variable -> index of farther neighbor in the neighbors array
 
+// kd-tree function
 void swap(struct kd_node_t *a, struct kd_node_t *b);
 struct kd_node_t * partition(struct kd_node_t *array_s, struct kd_node_t *array_e, int axis);
 struct kd_node_t * median(struct kd_node_t *array_s, struct kd_node_t *array_e, int axis);
@@ -49,6 +50,9 @@ float dist(struct kd_node_t *node_a, struct kd_node_t *node_b);
 void kdtree_nearest(struct kd_node_t *root, struct kd_node_t *query, struct kd_node_t **best_near, float *distance, int index);
 void kdtree_neighbors(struct kd_node_t *root, struct kd_node_t *query, struct kd_node_t **best_near, float *distance, int index,
 								struct kd_node_t **neighbors, float dist_neighbors, float *local_max_distance);
+
+// subdivision collision checking
+bool scc(struct kd_node_t *qs, struct kd_node_t *qe, float step_min, cv::Mat img, struct vec2_t origin, GJKDetector *gjk, MobileRobot *mobile, Obstacle **obx, int num_obs);
 
 // Define drawing functions //
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
@@ -221,7 +225,7 @@ int main(int argc, char** argv)
 	
 	std::cout << "Initialization of PRM graph" << std::endl;
 	// Initialization of PRM graph
-	for(int i=0; i < N_CONFIG; i++)
+	while(num_conf < N_CONFIG)
 	{
 		// Sampling Strategy : Uniform Distribution
 		config_sample.x = rand()/((RAND_MAX + 1u)/WINDOW) - origin.x;
@@ -306,6 +310,8 @@ int main(int argc, char** argv)
 	struct kd_node_t test = {{31, 23}};
 	struct kd_node_t point;
 	
+	float step_size = 10;
+	
 	/*point.x[0] = free_conf_array[0].x;
 	point.x[1] = free_conf_array[0].y;
 	
@@ -374,13 +380,28 @@ int main(int argc, char** argv)
 					neighbors[j]->left,
 					neighbors[j]->right
 				);
-				line(
-					env_image,
-					cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
-					cv::Point(neighbors[j]->x[0]+origin.x, neighbors[j]->x[1]+origin.y),
-					cv::Scalar(128,128,128),
-					1
-				);
+				
+				if(scc(&point, neighbors[j], step_size, env_image, origin, &gjk, &mobile, obs, 4))
+				{
+					// create edge in roadmap
+					line(
+						env_image,
+						cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
+						cv::Point(neighbors[j]->x[0]+origin.x, neighbors[j]->x[1]+origin.y),
+						cv::Scalar(128, 128, 128),
+						1
+					);
+				}
+				else
+				{
+					line(
+						env_image,
+						cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
+						cv::Point(neighbors[j]->x[0]+origin.x, neighbors[j]->x[1]+origin.y),
+						cv::Scalar(0,0,255),
+						1
+					);
+				}
 			}
 		}
 		
@@ -509,6 +530,48 @@ int main(int argc, char** argv)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+// Subdivision Collision Checking
+bool scc(struct kd_node_t *qs, struct kd_node_t *qe, float step_min, cv::Mat img, struct vec2_t origin, GJKDetector *gjk, MobileRobot *mobile, Obstacle **obx, int num_obs)
+{
+	struct kd_node_t qi;
+	float step_x, step_y, step_mod;
+	int i=0;
+	step_x = qe->x[0] - qs->x[0];
+	step_y = qe->x[1] - qs->x[1];
+	while(1)
+	{
+		step_x = step_x/2;
+		step_y = step_y/2;
+		step_mod = sqrt((step_x * step_x)+(step_y * step_y));
+		//printf("step_x = %f\nstep_y = %f\nstep_mod =%f\n", step_x, step_y, step_mod);
+		if(step_mod < step_min)
+			return 1;
+		//printf("qi = {\n");	
+		for(int j=0; j<pow(2,i); j++)
+		{
+			qi.x[0] = (2*j+1)*step_x + qs->x[0];
+			qi.x[1] = (2*j+1)*step_y + qs->x[1];
+			
+			circle(
+				img,
+				cv::Point(qi.x[0]+origin.x, qi.x[1]+origin.y),
+				3,
+				cv::Scalar(255, 0, 255),
+				1
+			);
+			//printf("\t[%f, %f]\n", qi.x[0], qi.x[1]);
+			// check configuration qi with GJK
+			struct vec2_t qi_config;
+			qi_config.x = qi.x[0];
+			qi_config.y = qi.x[1];
+			
+			if(gjk->checkAllCollision(&qi_config, mobile, obx, num_obs) == COLLISION_FOUND)
+				return 0;
+		}
+		//printf("}\n");
+		i++;
+	}
+}
 
 void swap(struct kd_node_t *a, struct kd_node_t *b)
 {
