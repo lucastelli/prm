@@ -82,11 +82,13 @@ struct vec3_t
 /*------------------------//
 		Node of a graph
 //------------------------*/
-struct node 
+struct node_t
 {
-	struct vec2_t element;		// payload
-	int num;							// num of neighbors
-	struct node **neighbors; 	// array of reference
+	struct vec2_t value;
+	double heur;
+	double back_path_length;
+	std::vector<node_t*> neighbors;
+	node_t* parent;
 };
 
 /*------------------------//
@@ -122,6 +124,12 @@ struct kd_node_t
 {
 	float x[2];
 	struct kd_node_t *left, *right;
+	
+	//struct vec2_t value;
+	double heur;
+	double back_path_length;
+	std::vector<kd_node_t*> neighbors;
+	kd_node_t* parent;
 };
 
 #endif

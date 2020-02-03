@@ -30,9 +30,9 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 		10	// total configuration
+#define N_CONFIG 		300	// total configuration
 //#define RANGE		100
-#define N_NEIGHBORS 	3
+#define N_NEIGHBORS 	5
 
 // k-d Tree parameters and functions//
 #define MAX_DIM 2
@@ -53,6 +53,9 @@ void kdtree_neighbors(struct kd_node_t *root, struct kd_node_t *query, struct kd
 
 // subdivision collision checking
 bool scc(struct kd_node_t *qs, struct kd_node_t *qe, float step_min, cv::Mat img, struct vec2_t origin, GJKDetector *gjk, MobileRobot *mobile, Obstacle **obx, int num_obs);
+
+// A* algorithm
+bool search_optimal_path(struct kd_node_t *start, struct kd_node_t *goal, struct kd_node_t *nodes, int num_nodes);
 
 // Define drawing functions //
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
@@ -293,6 +296,11 @@ int main(int argc, char** argv)
   	{
   		nodes[i].x[0] = free_conf_array[i].x;
   		nodes[i].x[1] = free_conf_array[i].y;
+  		
+  		// initialization of a* algorithm
+  		nodes[i].heur = 0;
+  		nodes[i].back_path_length = 0;
+  		nodes[i].parent = nullptr;
   	}
   	
   	struct kd_node_t *root;
@@ -311,6 +319,13 @@ int main(int argc, char** argv)
 	struct kd_node_t point;
 	
 	float step_size = 10;
+	
+	std::vector<node_t> roadmap;
+	
+	for(int i=0; i < num_conf; i++)
+	{
+		printf("%d : [%f, %f] %p\n", i, nodes[i].x[0], nodes[i].x[1], &nodes[i]);
+	}
 	
 	/*point.x[0] = free_conf_array[0].x;
 	point.x[1] = free_conf_array[0].y;
@@ -343,8 +358,10 @@ int main(int argc, char** argv)
 	
 	for(int i=0; i < num_conf; i++)
 	{
-		point.x[0] = free_conf_array[i].x;
-		point.x[1] = free_conf_array[i].y;
+		//point.x[0] = free_conf_array[i].x;
+		//point.x[1] = free_conf_array[i].y;
+		point.x[0] = nodes[i].x[0];
+		point.x[1] = nodes[i].x[1];
 		dist = INFINITY;
 		n_index = 0;
 		local_distance = 0;
@@ -367,6 +384,8 @@ int main(int argc, char** argv)
 			cv::Scalar(255,0,0),
 			1
 		);*/
+		
+		// search neighbors of node with kd-tree
 		kdtree_neighbors(root, &point, nearest, &dist, 0, neighbors, dist_neigh, &local_distance);
 		for(int j=0; j < N_NEIGHBORS; j++)
 		{
@@ -383,7 +402,10 @@ int main(int argc, char** argv)
 				
 				if(scc(&point, neighbors[j], step_size, env_image, origin, &gjk, &mobile, obs, 4))
 				{
-					// create edge in roadmap
+					// add only valid neighbor into roadmap graph
+					nodes[i].neighbors.push_back(neighbors[j]);
+					neighbors[j]->neighbors.push_back(&nodes[i]);
+					
 					line(
 						env_image,
 						cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
@@ -404,9 +426,65 @@ int main(int argc, char** argv)
 				}
 			}
 		}
-		
-		free(neighbors);
 	}
+	
+	struct kd_node_t *start = &nodes[51];
+	struct kd_node_t *goal = &nodes[96];
+	
+	if(search_optimal_path(start, goal, nodes, num_conf))
+	{
+		puts("\n PATH FIND:");
+		struct kd_node_t *ptr = goal;
+		while(ptr)
+		{
+			printf("\t%p [%f, %f]", ptr, ptr->x[0], ptr->x[1]);
+			ptr = ptr->parent;
+			if(ptr)
+				printf(" <- ");
+		}
+		puts("");
+		
+		ptr = goal;
+		while(ptr)
+		{
+			if(ptr->parent)
+			{
+				line(
+					env_image,
+					cv::Point(ptr->x[0]+origin.x, ptr->x[1]+origin.y),
+					cv::Point(ptr->parent->x[0]+origin.x, ptr->parent->x[1]+origin.y),
+					cv::Scalar(0,255,0),
+					1
+				);
+			}
+			ptr = ptr->parent;
+		}
+	} 
+	else
+	{
+		puts("PATH NOT FOUND");
+	}
+	
+	// start
+	circle(
+		env_image,
+		cv::Point(start->x[0]+origin.x, start->x[1]+origin.y),
+		5,
+		cv::Scalar(0, 255, 0),
+		-1
+	);
+	
+	//end
+	circle(
+		env_image,
+		cv::Point(goal->x[0]+origin.x, goal->x[1]+origin.y),
+		5,
+		cv::Scalar(0, 0, 255),
+		-1
+	);
+	
+	
+	free(neighbors);
 	
 	#if 0
 	point = &nodes[5];
@@ -530,6 +608,102 @@ int main(int argc, char** argv)
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+bool contains(std::vector<struct kd_node_t*> *array, struct kd_node_t *element)
+{
+	for(int i = 0; i < array->size(); i++)
+	{
+		if(array->at(i) == element)
+			return 1;
+	}
+	return 0;
+}
+
+struct kd_node_t * pick_n_best(std::vector<struct kd_node_t*> *queue)
+{
+	struct kd_node_t *node, *best_node = nullptr;
+	double node_path_length, length = INFINITY;
+	int index = 0;
+	for(int i = 0; i < queue->size(); i++)
+	{
+		node = queue->at(i);
+		node_path_length = node->back_path_length + node->heur;
+		if(node_path_length < length)
+		{
+			length = node_path_length;
+			best_node = node;
+			index = i;
+		}
+	}
+	queue->erase(queue->begin() + index);
+	return best_node;
+}
+
+bool search_optimal_path(struct kd_node_t *start, struct kd_node_t *goal, struct kd_node_t *nodes, int num_nodes)
+{
+	std::vector<struct kd_node_t*> priority_queue;
+	std::vector<struct kd_node_t*> visited_nodes;
+	struct kd_node_t *n_best = nullptr, *neigh = nullptr;
+
+	for (int i = 0; i < num_nodes; i++)
+	{
+		nodes[i].heur = dist(nodes + i, goal);
+	}
+
+	priority_queue.push_back(start);
+	
+	while(priority_queue.size() > 0)
+	{
+		n_best = pick_n_best(&priority_queue);
+		printf("\tn_best = [%p] [%f, %f]\n", n_best, n_best->x[0], n_best->x[1]);
+		visited_nodes.push_back(n_best);
+
+		printf("Q = { ");
+		for (int i = 0; i < priority_queue.size(); i++)
+		{
+			printf("%p ", priority_queue.at(i));
+		}
+		printf("}\n");
+
+		printf("V = { ");
+		for (int i = 0; i < visited_nodes.size(); i++)
+		{
+			printf("%p ", visited_nodes.at(i));
+		}
+		printf("}\n");
+
+		if (n_best == goal)
+			return 1;
+
+		for (int i = 0; i < n_best->neighbors.size(); i++)
+		{
+			neigh = n_best->neighbors.at(i);
+			if (!contains(&visited_nodes, neigh))
+			{
+				if (!contains(&priority_queue, neigh))
+				{
+					neigh->parent = n_best;
+					neigh->back_path_length = n_best->back_path_length + dist(neigh, n_best);
+					priority_queue.push_back(neigh);
+				}
+				else if(n_best->back_path_length + dist(n_best, neigh) < neigh->back_path_length)
+				{
+					neigh->parent = n_best;
+					neigh->back_path_length = n_best->back_path_length + dist(neigh, n_best);
+				}
+			}
+		}
+
+		printf("Q = { ");
+		for (int i = 0; i < priority_queue.size(); i++)
+		{
+			printf("%p ", priority_queue.at(i));
+		}
+		printf("}\n");
+	}
+
+	return 0;
+}
+
 // Subdivision Collision Checking
 bool scc(struct kd_node_t *qs, struct kd_node_t *qe, float step_min, cv::Mat img, struct vec2_t origin, GJKDetector *gjk, MobileRobot *mobile, Obstacle **obx, int num_obs)
 {
@@ -552,13 +726,13 @@ bool scc(struct kd_node_t *qs, struct kd_node_t *qe, float step_min, cv::Mat img
 			qi.x[0] = (2*j+1)*step_x + qs->x[0];
 			qi.x[1] = (2*j+1)*step_y + qs->x[1];
 			
-			circle(
+			/*circle(
 				img,
 				cv::Point(qi.x[0]+origin.x, qi.x[1]+origin.y),
 				3,
 				cv::Scalar(255, 0, 255),
 				1
-			);
+			);*/
 			//printf("\t[%f, %f]\n", qi.x[0], qi.x[1]);
 			// check configuration qi with GJK
 			struct vec2_t qi_config;
