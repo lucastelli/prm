@@ -55,7 +55,7 @@ void kdtree_neighbors(struct kd_node_t *root, struct kd_node_t *query, struct kd
 bool scc(struct kd_node_t *qs, struct kd_node_t *qe, float step_min, cv::Mat img, struct vec2_t origin, GJKDetector *gjk, MobileRobot *mobile, Obstacle **obx, int num_obs);
 
 // A* algorithm
-bool search_optimal_path(struct node_t *start, struct node_t *goal, struct node_t *roadmap, int num_nodes);
+bool search_optimal_path(struct kd_node_t *start, struct kd_node_t *goal, struct kd_node_t *roadmap, int num_nodes);
 
 // Define drawing functions //
 void updateMap(cv::Mat &map_x, cv::Mat &map_y);
@@ -291,88 +291,43 @@ int main(int argc, char** argv)
   	//	->	kd-tree construction
   	
   	//struct kd_node_t nodes[num_conf];
-  	struct kd_node_t *nodes;
-  	nodes = (struct kd_node_t*)calloc(num_conf, sizeof(*nodes));
-  	struct node_t roadmap[num_conf];
+  	struct kd_node_t roadmap[num_conf];
+  	
   	// create node for all free-collision configurations
   	for(int i=0; i < num_conf; i++)
   	{
-  		nodes[i].x[0] = free_conf_array[i].x;
-  		nodes[i].x[1] = free_conf_array[i].y;
+  		roadmap[i].x[0] = free_conf_array[i].x;
+  		roadmap[i].x[1] = free_conf_array[i].y;
+  		// initialization of values for A* algorithm
+  		roadmap[i].heur = 0;
+		roadmap[i].back_path_length = 0;
+		roadmap[i].parent = nullptr;
   	}
   	
   	struct kd_node_t *root;
 	printf("KD TREE CREATE\n");
-	root = kdtree_make(nodes, nodes + num_conf, 0);
+	root = kdtree_make(roadmap, roadmap + num_conf, 0);
 	kdtree_stamp(root);
-	
-	for(int i=0; i < num_conf; i++)
-  	{
-  		// aggregation of kd_node with roadmap_node
-  		roadmap[i].value.x = nodes[i].x[0];
-  		roadmap[i].value.y = nodes[i].x[1];
-	  	roadmap[i].heur = 0;
-		roadmap[i].back_path_length = 0;
-		roadmap[i].parent = nullptr;
-		
-		nodes[i].roadmap_node = &roadmap[i];
-  	}
 	
   	struct kd_node_t **nearest;
 	nearest = (struct kd_node_t **)calloc(1, sizeof(*nearest));
 	
-	
-	float dist_neigh = 200;
-	float step_size = 10;
-	
-	//struct kd_node_t test = {{31, 23}};
+	// Construct roadmap's parameters
+	float dist_neigh = 200;	// maximum distance for neighbors
+	float step_size = 10;	// maximum step length for subdivision collision checking
 	
 	for(int i=0; i < num_conf; i++)
 	{
-		printf("%d : [%f, %f] kd_ptr = %p | [%f, %f] road_ptr = %p\n", i, nodes[i].x[0], nodes[i].x[1], &nodes[i], roadmap[i].value.x, roadmap[i].value.y, &roadmap[i]);
+		printf("%d : [%f, %f] kd_ptr = %p\n", i, roadmap[i].x[0], roadmap[i].x[1], &roadmap[i]);
 	}
 	
-	/*point.x[0] = free_conf_array[0].x;
-	point.x[1] = free_conf_array[0].y;
-	
-	printf("-------START TO CONNECT------------\n");
-	printf(
-		"point [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
-		&point,
-		point.x[0],
-		point.x[1],
-		point.left,
-		point.right
-	);
-	
-	kdtree_neighbors(root, &point, nearest, &dist, 0, neighbors, dist_neigh);
-	for(int i=0; i < N_NEIGHBORS; i++)
-		{
-			if(neighbors[i])
-			{
-				printf(
-					"neigh [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
-					neighbors[i],
-					(neighbors[i]) ? neighbors[i]->x[0] : 0,
-					(neighbors[i]) ? neighbors[i]->x[1] : 0,
-					neighbors[i]->left,
-					neighbors[i]->right
-				);
-			}
-		}*/
-	
 	// Creation of roadmap
-	struct kd_node_t point;
 	float dist;
 	float local_distance;
 	struct kd_node_t **neighbors;
 	
 	for(int i=0; i < num_conf; i++)
 	{
-		//point.x[0] = free_conf_array[i].x;
-		//point.x[1] = free_conf_array[i].y;
-		point.x[0] = nodes[i].x[0];
-		point.x[1] = nodes[i].x[1];
 		dist = INFINITY;
 		n_index = 0;
 		local_distance = 0;
@@ -382,22 +337,14 @@ int main(int argc, char** argv)
 		printf("-------START TO CONNECT------------\n");
 		printf(
 			"point [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
-			&point,
-			point.x[0],
-			point.x[1],
-			point.left,
-			point.right
+			&roadmap[i],
+			roadmap[i].x[0],
+			roadmap[i].x[1],
+			roadmap[i].left,
+			roadmap[i].right
 		);
-		/*circle(
-			env_image,
-			cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
-			dist_neigh,
-			cv::Scalar(255,0,0),
-			1
-		);*/
-		
 		// search neighbors of node with kd-tree
-		kdtree_neighbors(root, &point, nearest, &dist, 0, neighbors, dist_neigh, &local_distance);
+		kdtree_neighbors(root, &roadmap[i], nearest, &dist, 0, neighbors, dist_neigh, &local_distance);
 		for(int j=0; j < N_NEIGHBORS; j++)
 		{
 			if(neighbors[j])
@@ -411,18 +358,15 @@ int main(int argc, char** argv)
 					neighbors[j]->right
 				);
 				
-				if(scc(&point, neighbors[j], step_size, env_image, origin, &gjk, &mobile, obs, 4))
+				if(scc(&roadmap[i], neighbors[j], step_size, env_image, origin, &gjk, &mobile, obs, 4))
 				{
 					// add only valid neighbor into roadmap graph
-					//nodes[i].neighbors.push_back(neighbors[j]);
-					//neighbors[j]->neighbors.push_back(&nodes[i]);
-					
-					nodes[i].roadmap_node->neighbors.push_back(neighbors[j]->roadmap_node);
-					neighbors[j]->roadmap_node->neighbors.push_back(nodes[i].roadmap_node);
+					roadmap[i].neighbors.push_back(neighbors[j]);
+					neighbors[j]->neighbors.push_back(&roadmap[i]);
 					
 					line(
 						env_image,
-						cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
+						cv::Point(roadmap[i].x[0]+origin.x, roadmap[i].x[1]+origin.y),
 						cv::Point(neighbors[j]->x[0]+origin.x, neighbors[j]->x[1]+origin.y),
 						cv::Scalar(128, 128, 128),
 						1
@@ -432,7 +376,7 @@ int main(int argc, char** argv)
 				{
 					line(
 						env_image,
-						cv::Point(point.x[0]+origin.x, point.x[1]+origin.y),
+						cv::Point(roadmap[i].x[0]+origin.x, roadmap[i].x[1]+origin.y),
 						cv::Point(neighbors[j]->x[0]+origin.x, neighbors[j]->x[1]+origin.y),
 						cv::Scalar(0,0,255),
 						1
@@ -443,47 +387,118 @@ int main(int argc, char** argv)
 		free(neighbors);
 	}
 	
-	free(nearest);
-	free(nodes);
+	// Solve query algorithm
 	
-	// Update neighbors of roadmap's nodes from kd-tree's nodes
-	/*for(int i=0; i < num_conf; i++)
+	struct kd_node_t start = {{0, 0}};
+	struct kd_node_t goal = {{280, 325}};
+	
+	// Search neighbors for start
+	struct kd_node_t **s_neigh;
+	s_neigh = (struct kd_node_t **)calloc(N_NEIGHBORS, sizeof(*s_neigh));
+	
+	dist = INFINITY;
+	n_index = 0;
+	local_distance = 0;
+	n_max = 0;
+	kdtree_neighbors(root, &start, nearest, &dist, 0, s_neigh, dist_neigh, &local_distance);
+	
+	// Check connection from start to node which is a start's neighbor node in the roadmap
+	for(int j=0; j < N_NEIGHBORS; j++)
 	{
-		for(int j=0; j < nodes[i].neighbors.size(); j++)
+		if(s_neigh[j])
 		{
-			nodes[i].roadmap_node->neighbors.push_back(nodes[i].neighbors.at(j)->roadmap_node);
+			if(scc(&start, s_neigh[j], step_size, env_image, origin, &gjk, &mobile, obs, 4))
+			{
+				start.neighbors.push_back(s_neigh[j]);
+				s_neigh[j]->neighbors.push_back(&start);
+				
+				line(
+					env_image,
+					cv::Point(start.x[0]+origin.x, start.x[1]+origin.y),
+					cv::Point(s_neigh[j]->x[0]+origin.x, s_neigh[j]->x[1]+origin.y),
+					cv::Scalar(255, 0, 255),
+					1
+				);
+			}
+			else
+			{
+				line(
+					env_image,
+					cv::Point(start.x[0]+origin.x, start.x[1]+origin.y),
+					cv::Point(s_neigh[j]->x[0]+origin.x, s_neigh[j]->x[1]+origin.y),
+					cv::Scalar(0,0,255),
+					1
+				);
+			}
 		}
-	}*/
+	}
 	
+	// Search neighbors for goal
+	struct kd_node_t **g_neigh;
+	g_neigh = (struct kd_node_t **)calloc(N_NEIGHBORS, sizeof(*g_neigh));
+	
+	dist = INFINITY;
+	n_index = 0;
+	local_distance = 0;
+	n_max = 0;
+	kdtree_neighbors(root, &goal, nearest, &dist, 0, g_neigh, dist_neigh, &local_distance);
+	
+	// Check connection from goal to node which is a goal's neighbor node in the roadmap
+	for(int j=0; j < N_NEIGHBORS; j++)
+	{
+		if(g_neigh[j])
+		{
+			if(scc(&goal, g_neigh[j], step_size, env_image, origin, &gjk, &mobile, obs, 4))
+			{
+				goal.neighbors.push_back(g_neigh[j]);
+				g_neigh[j]->neighbors.push_back(&goal);
+				
+				line(
+					env_image,
+					cv::Point(goal.x[0]+origin.x, goal.x[1]+origin.y),
+					cv::Point(g_neigh[j]->x[0]+origin.x, g_neigh[j]->x[1]+origin.y),
+					cv::Scalar(255, 0, 255),
+					1
+				);
+			}
+			else
+			{
+				line(
+					env_image,
+					cv::Point(goal.x[0]+origin.x, goal.x[1]+origin.y),
+					cv::Point(g_neigh[j]->x[0]+origin.x, g_neigh[j]->x[1]+origin.y),
+					cv::Scalar(0,0,255),
+					1
+				);
+			}
+		}
+	}
 	
 	#if 1
-	struct node_t *start = &roadmap[51];
-	struct node_t *goal = &roadmap[96];
-	
-	if(search_optimal_path(start, goal, roadmap, num_conf))
+	if(search_optimal_path(&start, &goal, roadmap, num_conf))
 	{
 		puts("\n PATH FIND:");
-		struct node_t *ptr = goal;
+		struct kd_node_t *ptr = &goal;
 		while(ptr)
 		{
-			printf("\t%p [%f, %f]", ptr, ptr->value.x, ptr->value.y);
+			printf("\t%p [%f, %f]", ptr, ptr->x[0], ptr->x[1]);
 			ptr = ptr->parent;
 			if(ptr)
 				printf(" <- ");
 		}
 		puts("");
 		
-		ptr = goal;
+		ptr = &goal;
 		while(ptr)
 		{
 			if(ptr->parent)
 			{
 				line(
 					env_image,
-					cv::Point(ptr->value.x+origin.x, ptr->value.y+origin.y),
-					cv::Point(ptr->parent->value.x+origin.x, ptr->parent->value.y+origin.y),
+					cv::Point(ptr->x[0]+origin.x, ptr->x[1]+origin.y),
+					cv::Point(ptr->parent->x[0]+origin.x, ptr->parent->x[1]+origin.y),
 					cv::Scalar(0,255,0),
-					1
+					2
 				);
 			}
 			ptr = ptr->parent;
@@ -493,11 +508,12 @@ int main(int argc, char** argv)
 	{
 		puts("PATH NOT FOUND");
 	}
+	#endif
 	
 	// start
 	circle(
 		env_image,
-		cv::Point(start->value.x+origin.x, start->value.y+origin.y),
+		cv::Point(start.x[0]+origin.x, start.x[1]+origin.y),
 		5,
 		cv::Scalar(0, 255, 0),
 		-1
@@ -506,12 +522,12 @@ int main(int argc, char** argv)
 	//end
 	circle(
 		env_image,
-		cv::Point(goal->value.x+origin.x, goal->value.y+origin.y),
+		cv::Point(goal.x[0]+origin.x, goal.x[1]+origin.y),
 		5,
 		cv::Scalar(0, 0, 255),
 		-1
 	);
-	#endif
+	
 	
 	#if 0
 	point = &nodes[5];
@@ -637,14 +653,14 @@ int main(int argc, char** argv)
 
 #if 1
 
-float dist(struct node_t *node_a, struct node_t *node_b)
+/*float dist(struct kd_node_t *node_a, struct kd_node_t *node_b)
 {
 	struct vec2_t r;
 	r = node_a->value - node_b->value;
 	return sqrt(r.x*r.x + r.y*r.y);
-}
+}*/
 
-bool contains(std::vector<struct node_t*> *array, struct node_t *element)
+bool contains(std::vector<struct kd_node_t*> *array, struct kd_node_t *element)
 {
 	for(int i = 0; i < array->size(); i++)
 	{
@@ -654,9 +670,9 @@ bool contains(std::vector<struct node_t*> *array, struct node_t *element)
 	return 0;
 }
 
-struct node_t * pick_n_best(std::vector<struct node_t*> *queue)
+struct kd_node_t * pick_n_best(std::vector<struct kd_node_t*> *queue)
 {
-	struct node_t *node, *best_node = nullptr;
+	struct kd_node_t *node, *best_node = nullptr;
 	double node_path_length, length = INFINITY;
 	int index = 0;
 	for(int i = 0; i < queue->size(); i++)
@@ -674,11 +690,11 @@ struct node_t * pick_n_best(std::vector<struct node_t*> *queue)
 	return best_node;
 }
 
-bool search_optimal_path(struct node_t *start, struct node_t *goal, struct node_t *roadmap, int num_nodes)
+bool search_optimal_path(struct kd_node_t *start, struct kd_node_t *goal, struct kd_node_t *roadmap, int num_nodes)
 {
-	std::vector<struct node_t*> priority_queue;
-	std::vector<struct node_t*> visited_nodes;
-	struct node_t *n_best = nullptr, *neigh = nullptr;
+	std::vector<struct kd_node_t*> priority_queue;
+	std::vector<struct kd_node_t*> visited_nodes;
+	struct kd_node_t *n_best = nullptr, *neigh = nullptr;
 
 	for (int i = 0; i < num_nodes; i++)
 	{
@@ -690,7 +706,7 @@ bool search_optimal_path(struct node_t *start, struct node_t *goal, struct node_
 	while(priority_queue.size() > 0)
 	{
 		n_best = pick_n_best(&priority_queue);
-		printf("\tn_best = [%p] [%f, %f]\n", n_best, n_best->value.x, n_best->value.y);
+		printf("\tn_best = [%p] [%f, %f]\n", n_best, n_best->x[0], n_best->x[1]);
 		visited_nodes.push_back(n_best);
 
 		printf("Q = { ");

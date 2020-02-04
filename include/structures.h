@@ -82,14 +82,14 @@ struct vec3_t
 /*------------------------//
 		Node of a graph
 //------------------------*/
-struct node_t
+/*struct node_t
 {
 	struct vec2_t value;
 	double heur;
 	double back_path_length;
 	std::vector<node_t*> neighbors;
 	node_t* parent;
-};
+};*/
 
 /*------------------------//
 		k-d Tree node
@@ -126,11 +126,11 @@ struct kd_node_t
 	struct kd_node_t *left, *right;
 	
 	//struct vec2_t value;
-	//double heur;
-	//double back_path_length;
+	double heur;
+	double back_path_length;
 	std::vector<struct kd_node_t*> neighbors;
 	struct node_t *roadmap_node;
-	//kd_node_t* parent;
+	kd_node_t* parent;
 };
 
 #endif
