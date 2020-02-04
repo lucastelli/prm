@@ -290,7 +290,9 @@ int main(int argc, char** argv)
   	// Connection Strategy: kd-tree data structure
   	//	->	kd-tree construction
   	
-  	struct kd_node_t nodes[num_conf];
+  	//struct kd_node_t nodes[num_conf];
+  	struct kd_node_t *nodes;
+  	nodes = (struct kd_node_t*)calloc(num_conf, sizeof(*nodes));
   	struct node_t roadmap[num_conf];
   	// create node for all free-collision configurations
   	for(int i=0; i < num_conf; i++)
@@ -440,6 +442,9 @@ int main(int argc, char** argv)
 		}
 		free(neighbors);
 	}
+	
+	free(nearest);
+	free(nodes);
 	
 	// Update neighbors of roadmap's nodes from kd-tree's nodes
 	/*for(int i=0; i < num_conf; i++)
