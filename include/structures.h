@@ -126,10 +126,11 @@ struct kd_node_t
 	struct kd_node_t *left, *right;
 	
 	//struct vec2_t value;
-	double heur;
-	double back_path_length;
-	std::vector<kd_node_t*> neighbors;
-	kd_node_t* parent;
+	//double heur;
+	//double back_path_length;
+	std::vector<struct kd_node_t*> neighbors;
+	struct node_t *roadmap_node;
+	//kd_node_t* parent;
 };
 
 #endif
