@@ -12,6 +12,12 @@ vector.h
 iostream
 -
 
+../include/endeffector.h
+iostream
+-
+joint.h
+../include/joint.h
+
 ../include/gjkdetector.h
 iostream
 -
@@ -22,6 +28,26 @@ obstacle.h
 mobilerobot.h
 ../include/mobilerobot.h
 
+../include/joint.h
+cmath
+-
+iostream
+-
+opencv2/core.hpp
+-
+opencv2/imgproc.hpp
+-
+opencv2/highgui.hpp
+-
+
+../include/linear.h
+iostream
+-
+joint.h
+../include/joint.h
+robot.h
+../include/robot.h
+
 ../include/mobilerobot.h
 iostream
 -
@@ -43,6 +69,24 @@ opencv2/highgui.hpp
 -
 structures.h
 ../include/structures.h
+
+../include/robot.h
+joint.h
+../include/joint.h
+endeffector.h
+../include/endeffector.h
+opencv2/core.hpp
+-
+opencv2/imgproc.hpp
+-
+opencv2/highgui.hpp
+-
+
+../include/rotoidal.h
+iostream
+-
+joint.h
+../include/joint.h
 
 ../include/structures.h
 
@@ -58,15 +102,35 @@ structures.h
 mobilerobot.h
 /home/luca/software/projectACA/project/class/mobilerobot.h
 
+/home/luca/software/projectACA/project/class/endeffector.cpp
+endeffector.h
+/home/luca/software/projectACA/project/class/endeffector.h
+
 /home/luca/software/projectACA/project/class/gjkdetector.cpp
 gjkdetector.h
 /home/luca/software/projectACA/project/class/gjkdetector.h
 vector.cpp
 /home/luca/software/projectACA/project/class/vector.cpp
 
+/home/luca/software/projectACA/project/class/joint.cpp
+joint.h
+/home/luca/software/projectACA/project/class/joint.h
+
+/home/luca/software/projectACA/project/class/linear.cpp
+linear.h
+/home/luca/software/projectACA/project/class/linear.h
+
 /home/luca/software/projectACA/project/class/obstacle.cpp
 obstacle.h
 /home/luca/software/projectACA/project/class/obstacle.h
+
+/home/luca/software/projectACA/project/class/robot.cpp
+robot.h
+/home/luca/software/projectACA/project/class/robot.h
+
+/home/luca/software/projectACA/project/class/rotoidal.cpp
+rotoidal.h
+/home/luca/software/projectACA/project/class/rotoidal.h
 
 /usr/local/include/opencv4/opencv2/calib3d.hpp
 opencv2/core.hpp

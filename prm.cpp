@@ -30,9 +30,9 @@
 #define ARROW_LENGTH 6
 
 // PRM Parameters //
-#define N_CONFIG 		300	// total configuration
+#define N_CONFIG 		200	// total configuration
 //#define RANGE		100
-#define N_NEIGHBORS 	5
+#define N_NEIGHBORS 	5		// number of neighbors for each node
 
 // k-d Tree parameters and functions//
 #define MAX_DIM 2
@@ -391,6 +391,8 @@ int main(int argc, char** argv)
 	
 	struct kd_node_t start = {{0, 0}};
 	struct kd_node_t goal = {{280, 325}};
+	start.parent = nullptr;
+	goal.parent = nullptr;
 	
 	// Search neighbors for start
 	struct kd_node_t **s_neigh;
@@ -474,9 +476,12 @@ int main(int argc, char** argv)
 		}
 	}
 	
+	// A* Algorithm
 	#if 1
+	bool check_shorter_path = false;
 	if(search_optimal_path(&start, &goal, roadmap, num_conf))
 	{
+		check_shorter_path = true;
 		puts("\n PATH FIND:");
 		struct kd_node_t *ptr = &goal;
 		while(ptr)
@@ -527,6 +532,56 @@ int main(int argc, char** argv)
 		cv::Scalar(0, 0, 255),
 		-1
 	);
+	
+	if(check_shorter_path)
+	{
+		// Postprocessing Queries
+		struct kd_node_t *scan_path_ptr, *tmp_ptr, *node_index;
+		node_index = &goal;
+		scan_path_ptr = goal.parent;
+		tmp_ptr = scan_path_ptr;
+		while(scan_path_ptr)
+		{
+			if(scc(scan_path_ptr, node_index, step_size, env_image, origin, &gjk, &mobile, obs, 4))
+			{
+				tmp_ptr = scan_path_ptr;
+				scan_path_ptr = scan_path_ptr->parent;
+			}
+			else
+			{
+				node_index->parent = tmp_ptr;
+				node_index = tmp_ptr;
+			}
+		}
+		
+		puts("\n SHORTER PATH FIND:");
+		struct kd_node_t *ptr_stamp = &goal;
+		while(ptr_stamp)
+		{
+			printf("\t%p [%f, %f]", ptr_stamp, ptr_stamp->x[0], ptr_stamp->x[1]);
+			ptr_stamp = ptr_stamp->parent;
+			if(ptr_stamp)
+				printf(" <- ");
+		}
+		puts("");
+		
+		ptr_stamp = &goal;
+		while(ptr_stamp)
+		{
+			if(ptr_stamp->parent)
+			{
+				line(
+					env_image,
+					cv::Point(ptr_stamp->x[0]+origin.x, ptr_stamp->x[1]+origin.y),
+					cv::Point(ptr_stamp->parent->x[0]+origin.x, ptr_stamp->parent->x[1]+origin.y),
+					cv::Scalar(255,0,0),
+					2
+				);
+			}
+			ptr_stamp = ptr_stamp->parent;
+		}
+	}
+	
 	
 	
 	#if 0
