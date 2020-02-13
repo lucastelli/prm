@@ -185,7 +185,7 @@ int main(int argc, char** argv)
   		1
   	);
   	
-  	// Draw grid x axes
+  	// Draw x axes
   	int val;
   	for(int i=0; i <= MAP_WIDTH; i = i + UNIT)
   	{
@@ -200,7 +200,7 @@ int main(int argc, char** argv)
   			1
   		);
   	}
-  	// Draw grid y axes
+  	// Draw y axes
   	for(int i=0; i <= MAP_HEIGHT; i = i + UNIT)
   	{
   		val = 5;
@@ -214,9 +214,31 @@ int main(int argc, char** argv)
   			1
   		);
   	}
+  	// Draw grid
+  	cv::Scalar color_grid(217, 217, 217);
+  	for(int i = UNIT * 5; i < MAP_WIDTH; i = i + UNIT * 5)
+  	{
+  		line(
+  			env_image,
+  			cv::Point(origin.x + i, origin.y),
+  			cv::Point(origin.x + i, origin.y + MAP_HEIGHT),
+  			color_grid,
+  			1
+  		);
+  	}
+  	for(int i = UNIT * 5; i < MAP_HEIGHT; i = i + UNIT * 5)
+  	{
+  		line(
+  			env_image,
+  			cv::Point(origin.x, origin.y + i),
+  			cv::Point(origin.x + MAP_WIDTH, origin.y + i),
+  			color_grid,
+  			1
+  		);
+  	}
   	
   	
-  	// Draw axis
+  	// Draw vector axis
   	xAxis = drawVector(env_image, origin, AXIS_LENGTH, 0, Scalar(255, 0, 0));
   	yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
@@ -304,8 +326,6 @@ int main(int argc, char** argv)
 	while(num_conf < N_CONFIG)
 	{
 		// Sampling Strategy : Uniform Distribution
-		//config_sample.x = rand()/((RAND_MAX + 1u)/MAP_WIDTH) - origin.x;
-		//config_sample.y = rand()/((RAND_MAX + 1u)/MAP_HEIGHT) - origin.y;
 		config_sample.x = rand()/((RAND_MAX + 1u)/MAP_WIDTH);
 		config_sample.y = rand()/((RAND_MAX + 1u)/MAP_HEIGHT);
 		
@@ -465,7 +485,7 @@ int main(int argc, char** argv)
 	// Solve query algorithm
 	
 	struct kd_node_t start = {{0, 0}};
-	struct kd_node_t goal = {{280, 325}};
+	struct kd_node_t goal = {{450, 50}};
 	start.parent = nullptr;
 	goal.parent = nullptr;
 	
