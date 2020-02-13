@@ -21,7 +21,15 @@
 #include <time.h>
 
 // Window Parameters //
-#define WINDOW 400
+#define WINDOW 600
+	
+// Display Map Parameters
+#define MAP_WIDTH		500	//	width of the map (pixels)
+#define MAP_HEIGHT	500	// height of the map (pixels)
+#define UNIT			10		// unit of grid (pixels per unit)
+#define RESOLUTION	1		// resolution of the map (pixels per meter)
+#define MARGIN_RIGHT	20		// margin right of map (pixels)
+#define MARGIN_TOP	20		// margin top of map (pixels)
 
 // Frame Reference Parameters //
 #define FRAME_OFFSET 5
@@ -31,7 +39,6 @@
 
 // PRM Parameters //
 #define N_CONFIG 		200	// total configuration
-//#define RANGE		100
 #define N_NEIGHBORS 	5		// number of neighbors for each node
 
 // k-d Tree parameters and functions//
@@ -141,10 +148,75 @@ int main(int argc, char** argv)
   	cv::Mat map_x(env_image.size(), CV_32FC1);
   	cv::Mat map_y(env_image.size(), CV_32FC1);
   	
-  	// Define and display reference frame	
+  	// Define and display reference frame of the map	
   	cv::Point xAxis, yAxis;
-  	struct vec2_t origin = {20, 20};
+  	struct vec2_t origin = {WINDOW - MAP_WIDTH - MARGIN_RIGHT, WINDOW - MAP_HEIGHT - MARGIN_TOP};
   	
+  	// Draw map border
+  	line(
+  		env_image,
+  		cv::Point(origin.x, origin.y),
+  		cv::Point(origin.x + MAP_WIDTH, origin.y),
+  		cv::Scalar(0, 0, 0),
+  		1
+  	);
+  	
+  	line(
+  		env_image,
+  		cv::Point(origin.x + MAP_WIDTH, origin.y),
+  		cv::Point(origin.x + MAP_WIDTH, origin.y + MAP_HEIGHT),
+  		cv::Scalar(0, 0, 0),
+  		1
+  	);
+  	
+  	line(
+  		env_image,
+  		cv::Point(origin.x + MAP_WIDTH, origin.y + MAP_HEIGHT),
+  		cv::Point(origin.x, origin.y + MAP_HEIGHT),
+  		cv::Scalar(0, 0, 0),
+  		1
+  	);
+  	
+  	line(
+  		env_image,
+  		cv::Point(origin.x, origin.y + MAP_HEIGHT),
+  		cv::Point(origin.x, origin.y),
+  		cv::Scalar(0, 0, 0),
+  		1
+  	);
+  	
+  	// Draw grid x axes
+  	int val;
+  	for(int i=0; i <= MAP_WIDTH; i = i + UNIT)
+  	{
+  		val = 5;
+  		if(!(i % (UNIT * 5)))
+  			val = 10;
+  		line(
+  			env_image,
+  			cv::Point(origin.x + i, origin.y),
+  			cv::Point(origin.x + i, origin.y - val),
+  			cv::Scalar(0, 0, 0),
+  			1
+  		);
+  	}
+  	// Draw grid y axes
+  	for(int i=0; i <= MAP_HEIGHT; i = i + UNIT)
+  	{
+  		val = 5;
+  		if(!(i % (UNIT * 5)))
+  			val = 10;
+  		line(
+  			env_image,
+  			cv::Point(origin.x, origin.y + i),
+  			cv::Point(origin.x - val, origin.y + i),
+  			cv::Scalar(0, 0, 0),
+  			1
+  		);
+  	}
+  	
+  	
+  	// Draw axis
   	xAxis = drawVector(env_image, origin, AXIS_LENGTH, 0, Scalar(255, 0, 0));
   	yAxis = drawVector(env_image, origin, AXIS_LENGTH, M_PI/2, Scalar(0, 0, 255));
   	
@@ -152,9 +224,10 @@ int main(int argc, char** argv)
   	//manipulator.computePose();
   	//manipulator.draw(env_image);
   	
+#if 1
   	MobileRobot mobile({0, 0});
   	//mobile.getRotation();
-  	mobile.draw(env_image, origin);
+  	//mobile.draw(env_image, origin);
   	
   	// Display obstacles
   	struct vec2_t ob_pts1[] = {	
@@ -231,8 +304,10 @@ int main(int argc, char** argv)
 	while(num_conf < N_CONFIG)
 	{
 		// Sampling Strategy : Uniform Distribution
-		config_sample.x = rand()/((RAND_MAX + 1u)/WINDOW) - origin.x;
-		config_sample.y = rand()/((RAND_MAX + 1u)/WINDOW) - origin.y;
+		//config_sample.x = rand()/((RAND_MAX + 1u)/MAP_WIDTH) - origin.x;
+		//config_sample.y = rand()/((RAND_MAX + 1u)/MAP_HEIGHT) - origin.y;
+		config_sample.x = rand()/((RAND_MAX + 1u)/MAP_WIDTH);
+		config_sample.y = rand()/((RAND_MAX + 1u)/MAP_HEIGHT);
 		
 		// GJK Collision Detection
 		// config_sample is collision-free?
@@ -553,6 +628,8 @@ int main(int argc, char** argv)
 				node_index = tmp_ptr;
 			}
 		}
+		node_index->parent = tmp_ptr;
+		node_index = tmp_ptr;
 		
 		puts("\n SHORTER PATH FIND:");
 		struct kd_node_t *ptr_stamp = &goal;
@@ -581,84 +658,7 @@ int main(int argc, char** argv)
 			ptr_stamp = ptr_stamp->parent;
 		}
 	}
-	
-	
-	
-	#if 0
-	point = &nodes[5];
-	
-	printf("------------------------------\n");
-	printf(
-			"point [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
-			point,
-			(point) ? point->x[0] : 0,
-			(point) ? point->x[1] : 0,
-			point->left,
-			point->right
-		);
-		
-	circle(
-		env_image,
-		cv::Point(point->x[0]+origin.x, point->x[1]+origin.y),
-		dist_neigh,
-		cv::Scalar(255,0,0),
-		1
-	);
-	
-	kdtree_neighbors(root, point, nearest, &dist, 0, neighbors, dist_neigh);
-	printf("-------- NEIGHBORS ---------\n");
-	for(int i=0; i<N_NEIGHBORS; i++)
-	{
-		if(neighbors[i])
-			printf(
-				"node [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
-				neighbors[i],
-				(neighbors[i]) ? neighbors[i]->x[0] : 0,
-				(neighbors[i]) ? neighbors[i]->x[1] : 0,
-				neighbors[i]->left,
-				neighbors[i]->right
-			);
-	}
-	
-	for(int i=0; i < N_NEIGHBORS; i++)
-	{
-		line(
-			env_image,
-			cv::Point(point->x[0]+origin.x, point->x[1]+origin.y),
-			cv::Point(neighbors[i]->x[0]+origin.x, neighbors[i]->x[1]+origin.y),
-			cv::Scalar(128,128,128),
-			1
-		);
-	}
-	#endif
-	
-	#if 0
-	kdtree_nearest(root, &test, nearest, &dist, 0);
-	printf("The point near [%f, %f] is [%f, %f] at distance %f\n", test.x[0], test.x[1], nearest[0]->x[0], nearest[0]->x[1], dist);
-	printf(
-			"node [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
-			nearest[0],
-			(nearest[0]) ? nearest[0]->x[0] : 0,
-			(nearest[0]) ? nearest[0]->x[1] : 0,
-			nearest[0]->left,
-			nearest[0]->right
-		);
-	
-	kdtree_neighbors(root, &test, nearest, &dist, 0, neighbors, dist_neigh);
-	printf("\nThe neighbors near [%f, %f] are\n", test.x[0], test.x[1]);
-	for(int i=0; i<N_NEIGHBORS; i++)
-	{
-		if(neighbors[i])
-			printf(
-				"node [%p]\n\t[%f, %f]\n\tleft -> %p\n\tright -> %p\n", 
-				neighbors[i],
-				(neighbors[i]) ? neighbors[i]->x[0] : 0,
-				(neighbors[i]) ? neighbors[i]->x[1] : 0,
-				neighbors[i]->left,
-				neighbors[i]->right
-			);
-	}
-	#endif
+#endif
   	
 	// Flip vertical entire image
 	updateMap(map_x, map_y);
@@ -667,6 +667,42 @@ int main(int argc, char** argv)
 	// Display the vector labels of all frames reference
 	drawLabel(flip_env_image, "x", xAxis);
 	drawLabel(flip_env_image, "y", yAxis);
+	
+	// Display grid labels
+	char s_number[5];
+	cv::Size txt_size;
+	int baseline = 0;
+	for(int i=0; i <= MAP_WIDTH; i = i + UNIT * 5)
+  	{
+		sprintf(s_number, "%d", i/RESOLUTION);
+		txt_size = getTextSize(s_number, FONT_HERSHEY_SIMPLEX, 0.35, 1, &baseline);
+		putText(
+			flip_env_image, 
+			s_number, 
+			cv::Point(origin.x + i - txt_size.width/2, MAP_HEIGHT + 20 + MARGIN_TOP),
+			FONT_HERSHEY_SIMPLEX,
+			0.35,  
+			cv::Scalar(0,0,0), 
+			1
+		);
+  	}
+  	for(int i=0; i <= MAP_HEIGHT; i = i + UNIT * 5)
+  	{
+		int offset = 0;
+		int num_char = sprintf(s_number, "%d", i/RESOLUTION);
+		txt_size = getTextSize(s_number, FONT_HERSHEY_SIMPLEX, 0.35, 1, &baseline);
+		if(num_char > 1)
+			offset = txt_size.width/2;
+		putText(
+			flip_env_image, 
+			s_number, 
+			cv::Point(WINDOW - MAP_WIDTH - MARGIN_RIGHT - 20 - offset, MAP_HEIGHT - i + MARGIN_TOP + txt_size.height/2),
+			FONT_HERSHEY_SIMPLEX,
+			0.35,  
+			cv::Scalar(0,0,0), 
+			1
+		);
+  	}
 	
 	// Display the flip image
 	imshow( env_window, flip_env_image );

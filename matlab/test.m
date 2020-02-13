@@ -1,5 +1,7 @@
 clear all;
 close all;
 
-gen3 = loadrobot("kinovaGen3");
-show(gen3)
+v = [0 0 0; 0 50 0; 50 50 0; 50 0 0; 0 0 50; 0 50 50; 50 50 50; 50 0 50; 0 0 0; 0 0 50; 0 50 50; 0 50 0; 50 0 0; 50 0 50; 50 50 50; 50 50 0];
+f = [1 2 3 4; 5 6 7 8; 9 10 11 12; 13 14 15 16];
+patch('Faces',f,'Vertices',v,'FaceColor','green')
+view(3)
